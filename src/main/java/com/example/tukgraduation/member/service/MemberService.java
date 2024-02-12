@@ -28,4 +28,7 @@ public class MemberService extends BaseEntity {
         return memberRepository.findById(userId).orElseThrow();
     }
 
+    public Member findUserByUsername(String username) {
+        return memberRepository.findByUsername(username).orElseThrow();
+    }
 }

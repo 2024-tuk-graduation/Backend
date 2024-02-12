@@ -16,6 +16,7 @@ public class MemberMapper {
         return Member.builder()
                 .username(memberCreate.getUsername())
                 .password(memberCreate.getPassword())
+                .name(memberCreate.getName())
                 .build();
 
     }
