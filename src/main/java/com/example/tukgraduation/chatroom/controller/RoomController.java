@@ -1,6 +1,7 @@
 package com.example.tukgraduation.chatroom.controller;
 
 import com.example.tukgraduation.chatroom.domain.Room;
+import com.example.tukgraduation.chatroom.dto.RoomEnterRequest;
 import com.example.tukgraduation.chatroom.service.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,9 @@ public class RoomController {
     }
 
     // 방 입장
-    @PostMapping("/{entranceCode}")
-    public ResponseEntity<String> enterRoom(@PathVariable(name = "entranceCode") String entranceCode,
-                                            @RequestParam String nickname) {
-        boolean isHost = roomService.verifyEntrance(entranceCode, nickname);
+    @PostMapping("/entrance")
+    public ResponseEntity<String> enterRoom(@RequestBody RoomEnterRequest request) {
+        boolean isHost = roomService.verifyEntrance(request.getEntranceCode(), request.getNickname());
         if (isHost) {
             return ResponseEntity.ok("호스트로 입장했습니다.");
         } else {
