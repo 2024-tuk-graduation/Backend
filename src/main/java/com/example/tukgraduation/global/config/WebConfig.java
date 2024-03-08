@@ -24,7 +24,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     //    private final LoginInterceptor loginInterceptor;
-//    private final LoginMemberArgumentsResolver loginUserArgumentsResolver;
+    //    private final LoginMemberArgumentsResolver loginUserArgumentsResolver;
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

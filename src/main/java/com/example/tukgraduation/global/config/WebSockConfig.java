@@ -6,19 +6,24 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-@EnableWebSocketMessageBroker
 @Configuration
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@EnableWebSocketMessageBroker
+public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chattings")
-                .setAllowedOrigins("*");
+        // stomp 접속 주소 url => /ws
+        registry.addEndpoint("/ws") // 연결될 엔드포인트
+                .setAllowedOriginPatterns("*") // 모든 오리진 허용
+                .withSockJS(); // SocketJS 를 연결한다는 설정
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/subscription");  // (1) 메시지 구독 요청: 메시지 송신
-        registry.setApplicationDestinationPrefixes("/publication"); // (2) 메시지 발행 요청: 메시지 수신
+        // 메시지를 구독하는 요청 url => 즉 메시지 받을 때
+        registry.enableSimpleBroker("/sub");
+
+        // 메시지를 발행하는 요청 url => 즉 메시지 보낼 때
+        registry.setApplicationDestinationPrefixes("/pub");
     }
 }
