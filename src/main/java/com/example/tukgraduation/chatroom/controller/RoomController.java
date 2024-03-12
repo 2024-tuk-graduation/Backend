@@ -2,6 +2,7 @@ package com.example.tukgraduation.chatroom.controller;
 
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.RoomEnterRequest;
+import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.service.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class RoomController {
 
     private final RoomService roomService;
+
     public RoomController(RoomService roomService) {
         this.roomService = roomService;
     }
@@ -34,13 +36,12 @@ public class RoomController {
 //    }
 
     @PostMapping("/entrance")
-    public ResponseEntity<String> enterRoom(@RequestBody RoomEnterRequest request) {
-        if (roomService.enterRoom(request.getEntranceCode(), request.getNickname())) {
-            // 입장 코드 일치 시 입장 처리
-            return ResponseEntity.ok("방에 입장했습니다.");
+    public ResponseEntity<RoomUpdateNotification> enterRoom(@RequestBody RoomEnterRequest request) {
+        RoomUpdateNotification roomUpdateNotification = roomService.enterRoom(request.getEntranceCode(), request.getNickname());
+        if (roomUpdateNotification != null) {
+            return ResponseEntity.ok(roomUpdateNotification);
         } else {
-            // 입장 코드 불일치 시 거부 메시지
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("입장 코드가 올바르지 않습니다.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
     }

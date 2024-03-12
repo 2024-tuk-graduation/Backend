@@ -32,7 +32,7 @@ public class RoomService {
 
     // 방 입장 검증
     @Transactional
-    public boolean enterRoom(String entranceCode, String nickname) {
+    public RoomUpdateNotification enterRoom(String entranceCode, String nickname) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
 
@@ -46,7 +46,11 @@ public class RoomService {
 
         // 웹소켓을 통해 참가자 수와 닉네임 목록을 실시간으로 방송
         messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), nicknames.size(), nicknames));
-        return true;
+        return RoomUpdateNotification.builder()
+                .roomId(room.getId())
+                .participantCount(nicknames.size())
+                .participantNicknames(nicknames)
+                .build();
     }
 
     @Transactional
