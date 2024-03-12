@@ -42,5 +42,6 @@ public class RoomController {
             // 입장 코드 불일치 시 거부 메시지
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("입장 코드가 올바르지 않습니다.");
         }
+
     }
 }
