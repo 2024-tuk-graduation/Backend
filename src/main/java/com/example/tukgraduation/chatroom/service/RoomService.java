@@ -85,17 +85,17 @@ public class RoomService {
     }
 
     private void broadcastRoomUpdate(RoomUpdateNotification notification) {
-        messagingTemplate.convertAndSend("/topic/roomUpdate", notification);
+        messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
     }
 
 
-    private void broadcastRoomUpdate(Room room) {
-        List<String> nicknames = participantRepository.findByRoom(room).stream()
-                .map(Participant::getNickname)
-                .collect(Collectors.toList());
-
-        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), room.getParticipantCount(), nicknames));
-    }
+//    private void broadcastRoomUpdate(Room room) {
+//        List<String> nicknames = participantRepository.findByRoom(room).stream()
+//                .map(Participant::getNickname)
+//                .collect(Collectors.toList());
+//
+//        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), room.getParticipantCount(), nicknames));
+//    }
 
     // 방 입장 검증
 //    public boolean verifyEntrance(String entranceCode, String nickname) {
