@@ -2,7 +2,6 @@ package com.example.tukgraduation.chatroom.controller;
 
 import com.example.tukgraduation.chatroom.dto.CodeMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ public class CodeController {
     public CodeController(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
-    // Constructor omitted for brevity
 
     @MessageMapping("code")
     @SendTo("/pub/code")

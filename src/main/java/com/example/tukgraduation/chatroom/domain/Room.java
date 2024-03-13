@@ -23,7 +23,7 @@ public class Room extends BaseEntity{
     private String language; // 사용 언어
     private String roomName; // 방 이름
     private Long roomCount; // 방 인원 수
-    private int participantCount = 1; // 참가자 수
+    private int participantCount = 0; // 참가자 수
 
     // 입장 인원 증가 메서드
     public void incrementParticipantCount() {
