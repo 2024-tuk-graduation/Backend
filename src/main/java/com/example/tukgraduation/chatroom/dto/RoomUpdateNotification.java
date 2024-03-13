@@ -10,12 +10,14 @@ import java.util.List;
 public class RoomUpdateNotification {
     private Long roomId;
     private int participantCount;
+    private String hostNickname;
     private List<String> participantNicknames;
 
     // 생성자를 public으로 선언
-    public RoomUpdateNotification(Long roomId, int participantCount, List<String> participantNicknames) {
+    public RoomUpdateNotification(Long roomId, int participantCount, String  hostNickname, List<String> participantNicknames) {
         this.roomId = roomId;
         this.participantCount = participantCount;
         this.participantNicknames = participantNicknames;
+        this.hostNickname = hostNickname;
     }
 }

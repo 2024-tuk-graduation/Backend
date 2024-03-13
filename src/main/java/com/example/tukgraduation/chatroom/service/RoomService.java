@@ -39,6 +39,10 @@ public class RoomService {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
 
+        if (room.getHostNickname() == null) {
+            room.setHostNickname(nickname); // Set the first participant as the host
+        }
+
         Participant participant = new Participant(nickname, room);
         participantRepository.save(participant);
         room.incrementParticipantCount();
@@ -50,11 +54,12 @@ public class RoomService {
                 .collect(Collectors.toList());
 
         // 웹소켓을 통해 참가자 수와 닉네임 목록을 실시간으로 방송
-        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), nicknames.size(), nicknames));
+        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), nicknames.size(), room.getHostNickname(),nicknames));
         return RoomUpdateNotification.builder()
                 .roomId(room.getId())
                 .participantCount(room.getParticipantCount())
                 .participantNicknames(nicknames)
+                .hostNickname(room.getHostNickname())
                 .build();
     }
 
@@ -78,6 +83,7 @@ public class RoomService {
         RoomUpdateNotification notification = new RoomUpdateNotification(
                 room.getId(),
                 room.getParticipantCount(),
+                room.getHostNickname(),
                 remainingNicknames
         );
         broadcastRoomUpdate(notification);

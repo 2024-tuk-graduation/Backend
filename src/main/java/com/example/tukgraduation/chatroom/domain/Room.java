@@ -34,5 +34,9 @@ public class Room extends BaseEntity{
         this.participantCount--;
     }
 
+    public void setHostNickname(String hostNickname) {
+        this.hostNickname = hostNickname;
+    }
+
 }
 
