@@ -2,6 +2,7 @@ package com.example.tukgraduation.chatroom.service;
 
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
+import com.example.tukgraduation.chatroom.dto.CodeMessage;
 import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
@@ -111,6 +112,19 @@ public class RoomService {
             messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
         }
     }
+
+    public void broadcastCodeFromHost(CodeMessage codeMessage) {
+        messagingTemplate.convertAndSend("/sub/code", codeMessage);
+    }
+
+    public void receiveCodeFromHost(String workspaceId, CodeMessage codeMessage, boolean isHost) {
+        if (isHost) {
+            // 호스트인 경우에만 메시지를 처리
+            broadcastCodeFromHost(codeMessage);
+        }
+        
+    }
+
 //    private void broadcastRoomUpdate(Room room) {
 //        List<String> nicknames = participantRepository.findByRoom(room).stream()
 //                .map(Participant::getNickname)
