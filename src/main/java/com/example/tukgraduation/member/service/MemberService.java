@@ -2,7 +2,7 @@ package com.example.tukgraduation.member.service;
 
 import com.example.tukgraduation.global.config.BaseEntity;
 import com.example.tukgraduation.member.domain.Member;
-import com.example.tukgraduation.member.dto.MemberDto;
+import com.example.tukgraduation.member.dto.MemberCreateRequest;
 import com.example.tukgraduation.member.mapper.MemberMapper;
 import com.example.tukgraduation.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class MemberService extends BaseEntity {
         return memberRepository.existsByUsername(username);
     }
 
-    public Member register(MemberDto.MemberCreateRequest requestDto) {
+    public Member register(MemberCreateRequest requestDto) {
         Member member = memberMapper.toMemberEntity(requestDto);
         return memberRepository.save(member);
     }

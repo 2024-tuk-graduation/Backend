@@ -4,7 +4,9 @@ import com.example.tukgraduation.global.annotation.LoginRequired;
 import com.example.tukgraduation.global.result.ResultCode;
 import com.example.tukgraduation.global.result.ResultResponse;
 import com.example.tukgraduation.member.domain.Member;
-import com.example.tukgraduation.member.dto.MemberDto;
+import com.example.tukgraduation.member.dto.MemberCreateRequest;
+import com.example.tukgraduation.member.dto.MemberLoginRequest;
+import com.example.tukgraduation.member.dto.MemberLoginResponse;
 import com.example.tukgraduation.member.service.LoginService;
 import com.example.tukgraduation.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +26,7 @@ public class MemberController {
     private final LoginService loginService;
 
     @PostMapping
-    public ResponseEntity<String> registration(@RequestBody @Valid MemberDto.MemberCreateRequest createRequest) {
+    public ResponseEntity<String> registration(@RequestBody @Valid MemberCreateRequest createRequest) {
         if (memberService.isDuplicatedUsername(createRequest.getUsername())) {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         }
@@ -34,7 +36,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResultResponse> login(@RequestBody @Valid MemberDto.MemberLoginRequest loginRequest, HttpServletRequest request) {
+    public ResponseEntity<ResultResponse> login(@RequestBody @Valid MemberLoginRequest loginRequest, HttpServletRequest request) {
 
         Member member = memberService.findUserByUsername(loginRequest.getUsername());
 
@@ -44,7 +46,7 @@ public class MemberController {
 
         loginService.login(member.getId(), request.getSession());
         return ResponseEntity.ok(ResultResponse.of(ResultCode.USER_LOGIN_SUCCESS,
-                MemberDto.MemberLoginResponse.builder()
+                MemberLoginResponse.builder()
                         .name(member.getName())
                         .id(member.getId())
                         .build()));
