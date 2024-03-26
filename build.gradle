@@ -51,6 +51,16 @@ dependencies {
 
     implementation 'org.webjars:sockjs-client:1.5.1'
 
+    //AWS S3
+    implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.1.0'
+
+    //hateoas 설정
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas:2.1.2.RELEASE'
+
+
+
+
+
 
 
 }

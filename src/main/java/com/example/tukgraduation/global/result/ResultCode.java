@@ -8,12 +8,14 @@ import lombok.Getter;
 public enum ResultCode {
 
     //Member
-    USER_NOT_LOGIN(201,"로그인이 필요합니다."),
-    USER_LOGIN_SUCCESS(200, "로그인 성공"),
+    UPLOAD_SUCCESS("A001", 200, "이미지 업로드 성공"),
+    USER_NOT_LOGIN("L001",201,"로그인이 필요합니다."),
+    USER_LOGIN_SUCCESS("L002",200, "로그인 성공"),
+
 
     ;
 
-
+    private final String code;
     private final int status;
     private final String message;
 }
