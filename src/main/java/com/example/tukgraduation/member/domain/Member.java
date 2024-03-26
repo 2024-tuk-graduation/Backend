@@ -15,7 +15,7 @@ import org.hibernate.annotations.SQLDelete;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE member SET is_deleted = NOW() WHERE id = ?")
 public class Member extends BaseEntity {
 
     @Id
@@ -32,6 +32,10 @@ public class Member extends BaseEntity {
 
     @NotBlank
     @Column(length = 20)
-    private String name;
+    private String nickname;
+
+    @Getter
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
 
 }

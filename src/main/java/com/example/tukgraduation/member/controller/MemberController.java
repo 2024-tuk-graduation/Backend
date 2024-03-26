@@ -7,16 +7,19 @@ import com.example.tukgraduation.member.domain.Member;
 import com.example.tukgraduation.member.dto.MemberCreateRequest;
 import com.example.tukgraduation.member.dto.MemberLoginRequest;
 import com.example.tukgraduation.member.dto.MemberLoginResponse;
+import com.example.tukgraduation.member.dto.MemberCreateResponse;
 import com.example.tukgraduation.member.service.LoginService;
 import com.example.tukgraduation.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/member")
@@ -25,14 +28,16 @@ public class MemberController {
     private final MemberService memberService;
     private final LoginService loginService;
 
-    @PostMapping
-    public ResponseEntity<String> registration(@RequestBody @Valid MemberCreateRequest createRequest) {
-        if (memberService.isDuplicatedUsername(createRequest.getUsername())) {
-            throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
-        }
-        memberService.register(createRequest);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("회원가입 성공");
+    @Operation(summary = "회원가입", description = "회원가입 기능")
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResultResponse<MemberCreateRequest>> signUp(@RequestParam String username,
+                                                                      @RequestParam String password,
+                                                                      @RequestParam String nickname,
+                                                                      @RequestPart("file") MultipartFile multipartFile) {
+        MemberCreateRequest memberCreateRequest = new MemberCreateRequest(username, password, nickname);
+        Member member = memberService.register(memberCreateRequest, multipartFile);
+        ResultResponse<MemberCreateRequest> resultResponse = new ResultResponse<>(ResultCode.SIGN_UP_SUCCESS, new MemberCreateResponse(member));
+        return ResponseEntity.status(HttpStatus.CREATED).body(resultResponse);
     }
 
     @PostMapping("/login")
@@ -47,7 +52,7 @@ public class MemberController {
         loginService.login(member.getId(), request.getSession());
         return ResponseEntity.ok(ResultResponse.of(ResultCode.USER_LOGIN_SUCCESS,
                 MemberLoginResponse.builder()
-                        .name(member.getName())
+                        .username(member.getUsername())
                         .id(member.getId())
                         .build()));
     }

@@ -6,21 +6,23 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    @Getter
-    @Builder
-    public class MemberCreateRequest {
 
-        @NotEmpty
-        @Length(min = 2, max = 20)
-        private String username;
+@Builder
+@Data
+public class MemberCreateRequest {
 
-        @NotEmpty
-        @Length(min = 4, max = 20)
-        private String password;
+    @NotEmpty
+    private String username;
 
-        @NotBlank
-        @Column(length = 20)
-        private String name;
+    @NotEmpty
+    private String password;
+
+    @NotBlank
+    private String nickname;
+
+    public MemberCreateRequest(String username, String password, String nickname) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
     }
+}
