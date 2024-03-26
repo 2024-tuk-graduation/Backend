@@ -32,12 +32,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
 
-    @Order(1)
-    @ExceptionHandler
-    protected ResponseEntity<String> handleException(Exception e) {
-
-        log.error(ErrorCode.INTERNAL_SERVER_ERROR + ", " + Arrays.toString(e.getStackTrace()));
-
-        return ResponseEntity.status(500).body("서버 내부 예외적 에러 발생");
-    }
+//    @Order(1)
+//    @ExceptionHandler
+//    protected ResponseEntity<String> handleException(Exception e) {
+//
+//        log.error(ErrorCode.INTERNAL_SERVER_ERROR + ", " + Arrays.toString(e.getStackTrace()));
+//
+//        return ResponseEntity.status(500).body("서버 내부 예외적 에러 발생");
+//    }
 }
