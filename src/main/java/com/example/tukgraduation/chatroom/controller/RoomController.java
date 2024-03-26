@@ -5,6 +5,7 @@ import com.example.tukgraduation.chatroom.dto.RoomEnterRequest;
 import com.example.tukgraduation.chatroom.dto.RoomLeaveRequest;
 import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.service.RoomService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
