@@ -48,7 +48,7 @@ gradle-app.setting
 .classpath
 
 # secret ignore
-application-secret.yml
+application.yml
 
 .DS_Store
 .env
