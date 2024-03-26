@@ -30,4 +30,8 @@ public class Member extends BaseEntity {
     @Column(length = 100)
     private String password;
 
+    @NotBlank
+    @Column(length = 20)
+    private String name;
+
 }
