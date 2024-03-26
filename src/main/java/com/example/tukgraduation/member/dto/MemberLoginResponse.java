@@ -10,7 +10,7 @@ import lombok.*;
 public class MemberLoginResponse {
 
     @NotNull
-    private String name;
+    private String username;
 
     private Long id;
 }
