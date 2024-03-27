@@ -25,10 +25,17 @@ public class SecurityConfig{
                         .requestMatchers("/", "/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/ws").permitAll()
                         .anyRequest().authenticated()
+                ).sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                // 로그아웃 설정
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/")); // 로그아웃 성공 시 리다이렉트될 URL
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                );
+        // 세션 관리 설정 변경: 세션을 항상 생성
+
 
         return http.build();
     }
