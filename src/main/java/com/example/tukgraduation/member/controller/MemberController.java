@@ -41,7 +41,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResultResponse> login(@RequestBody @Valid MemberLoginRequest loginRequest, HttpServletRequest request) {
+    public ResponseEntity<ResultResponse<MemberLoginResponse>> login(@RequestBody @Valid MemberLoginRequest loginRequest, HttpServletRequest request) {
 
         Member member = memberService.findUserByUsername(loginRequest.getUsername());
 
