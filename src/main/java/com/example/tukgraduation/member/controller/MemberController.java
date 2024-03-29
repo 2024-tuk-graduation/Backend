@@ -30,11 +30,9 @@ public class MemberController {
 
     @Operation(summary = "회원가입", description = "회원가입 기능")
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse<MemberCreateRequest>> signUp(@RequestPart String username,
-                                                                      @RequestPart String password,
-                                                                      @RequestPart String nickname,
-                                                                      @RequestPart("file") MultipartFile multipartFile) {
-        MemberCreateRequest memberCreateRequest = new MemberCreateRequest(username, password, nickname);
+    public ResponseEntity<ResultResponse<MemberCreateRequest>> signUp(@RequestPart MemberCreateRequest memberCreateRequest,
+                                                                      @RequestPart MultipartFile multipartFile) {
+        // MemberCreateRequest memberCreateRequest = new MemberCreateRequest(username, password, nickname);
         Member member = memberService.register(memberCreateRequest, multipartFile);
         ResultResponse<MemberCreateRequest> resultResponse = new ResultResponse<>(ResultCode.SIGN_UP_SUCCESS, new MemberCreateResponse(member));
         return ResponseEntity.status(HttpStatus.CREATED).body(resultResponse);
