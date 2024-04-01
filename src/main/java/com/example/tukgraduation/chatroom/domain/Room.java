@@ -21,8 +21,7 @@ public class Room extends BaseEntity{
     private String entranceCode; // 입장 코드
     private String hostNickname; // 호스트의 닉네임
     private String language; // 사용 언어
-    private String roomName; // 방 이름
-    private Long roomCount; // 방 인원 수
+    private int roomMaximumCount; // 방 인원 수
     private int participantCount = 0; // 참가자 수
 
     // 입장 인원 증가 메서드

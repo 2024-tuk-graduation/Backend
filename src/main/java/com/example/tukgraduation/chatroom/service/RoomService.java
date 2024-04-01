@@ -3,14 +3,22 @@ package com.example.tukgraduation.chatroom.service;
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.CodeMessage;
+import com.example.tukgraduation.chatroom.dto.RoomCreateRequest;
+import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
 import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
+import com.example.tukgraduation.global.annotation.LoginMember;
+import com.example.tukgraduation.member.domain.Member;
+import com.example.tukgraduation.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -21,19 +29,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomService {
     private final RoomRepository roomRepository;
-    private final ParticipantRepository participantRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MemberRepository memberRepository;
+    private final ParticipantRepository participantRepository;
 
 
     // 방 생성
-    public Room createRoom(String hostNickname) {
-        Room room = Room.builder()
-                .entranceCode("1234")
-                .hostNickname(hostNickname)
-                .build();
-        return roomRepository.save(room);
-    }
+    @Transactional
+    public Room createRoom(RoomCreateRequest request, @LoginMember Member loginMember) {
 
+        String entranceCode = RandomStringUtils.randomAlphanumeric(6);
+        Room room = Room.builder()
+                .hostNickname(loginMember.getNickname())
+                .language(request.getLanguage())
+                .roomMaximumCount(request.getRoomMaximumCount())
+                .entranceCode(entranceCode)
+                .build();
+        roomRepository.save(room);
+        return room;
+    }
     // 방 입장 검증
     @Transactional
     public RoomUpdateNotification enterRoom(String entranceCode, String nickname) {

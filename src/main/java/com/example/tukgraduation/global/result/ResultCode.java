@@ -13,6 +13,8 @@ public enum ResultCode {
     USER_LOGIN_SUCCESS("L002",200, "로그인 성공"),
     SIGN_UP_SUCCESS("S001", 200, "회원가입 성공"),
 
+    //Room
+    ROOM_CREATE_SUCCESS("R001", 200, "방 생성 성공"),
 
     ;
 
