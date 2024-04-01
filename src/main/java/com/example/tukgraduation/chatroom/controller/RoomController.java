@@ -1,14 +1,20 @@
 package com.example.tukgraduation.chatroom.controller;
 
 import com.example.tukgraduation.chatroom.domain.Room;
-import com.example.tukgraduation.chatroom.dto.RoomEnterRequest;
-import com.example.tukgraduation.chatroom.dto.RoomLeaveRequest;
-import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
+import com.example.tukgraduation.chatroom.dto.*;
 import com.example.tukgraduation.chatroom.service.RoomService;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.tukgraduation.global.annotation.LoginMember;
+import com.example.tukgraduation.global.annotation.LoginRequired;
+import com.example.tukgraduation.global.result.ResultCode;
+import com.example.tukgraduation.global.result.ResultResponse;
+import com.example.tukgraduation.member.domain.Member;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
@@ -20,10 +26,13 @@ public class RoomController {
         this.roomService = roomService;
     }
     // 방 생성
-    @PostMapping
-    public ResponseEntity<Room> createRoom(@RequestBody Room room) {
-        Room newRoom = roomService.createRoom(room.getHostNickname());
-        return new ResponseEntity<>(newRoom, HttpStatus.CREATED);
+    @PostMapping()
+    @LoginRequired
+    public ResponseEntity<ResultResponse<RoomCreateResponse>> createRoom(@RequestBody RoomCreateRequest roomCreateRequest,
+                                                                         @LoginMember @Parameter(hidden = true) Member loginMember) {
+        Room room = roomService.createRoom(roomCreateRequest, loginMember);
+        ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, new RoomCreateResponse(room));
+        return new ResponseEntity<>(resultResponse, HttpStatus.CREATED);
     }
 
     // 방 입장
