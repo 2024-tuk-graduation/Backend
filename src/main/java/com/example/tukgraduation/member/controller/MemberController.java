@@ -5,11 +5,13 @@ import com.example.tukgraduation.global.result.ResultCode;
 import com.example.tukgraduation.global.result.ResultResponse;
 import com.example.tukgraduation.member.domain.Member;
 import com.example.tukgraduation.member.dto.MemberCreateRequest;
+import com.example.tukgraduation.member.dto.MemberCreateResponse;
 import com.example.tukgraduation.member.dto.MemberLoginRequest;
 import com.example.tukgraduation.member.dto.MemberLoginResponse;
-import com.example.tukgraduation.member.dto.MemberCreateResponse;
 import com.example.tukgraduation.member.service.LoginService;
 import com.example.tukgraduation.member.service.MemberService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -30,9 +32,10 @@ public class MemberController {
 
     @Operation(summary = "회원가입", description = "회원가입 기능")
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse<MemberCreateRequest>> signUp(@RequestPart MemberCreateRequest memberCreateRequest,
-                                                                      @RequestPart MultipartFile multipartFile) {
-        // MemberCreateRequest memberCreateRequest = new MemberCreateRequest(username, password, nickname);
+    public ResponseEntity<ResultResponse<MemberCreateRequest>> signUp(@RequestPart String jsonMemberCreateRequest,
+                                                                      @RequestPart MultipartFile multipartFile) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        MemberCreateRequest memberCreateRequest = mapper.readValue(jsonMemberCreateRequest, MemberCreateRequest.class);
         Member member = memberService.register(memberCreateRequest, multipartFile);
         ResultResponse<MemberCreateRequest> resultResponse = new ResultResponse<>(ResultCode.SIGN_UP_SUCCESS, new MemberCreateResponse(member));
         return ResponseEntity.status(HttpStatus.CREATED).body(resultResponse);
