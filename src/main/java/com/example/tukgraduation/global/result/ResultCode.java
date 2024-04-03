@@ -15,6 +15,7 @@ public enum ResultCode {
 
     //Room
     ROOM_CREATE_SUCCESS("R001", 200, "방 생성 성공"),
+    ROOM_ENTER_SUCCESS("ROO2", 200, "방 입장 성공"),
 
     ;
 

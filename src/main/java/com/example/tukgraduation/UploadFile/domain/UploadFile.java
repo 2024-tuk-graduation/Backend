@@ -1,4 +1,4 @@
-package com.example.tukgraduation.pdf.domain;
+package com.example.tukgraduation.UploadFile.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,12 +10,15 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PdfFile {
+public class UploadFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fileName;
+
+    private String fileType;
+
     @Length(max = 2048)
     private String fileUrl;
 

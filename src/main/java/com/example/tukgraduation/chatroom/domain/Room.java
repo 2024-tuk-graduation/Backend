@@ -26,7 +26,7 @@ public class Room extends BaseEntity{
     private int template;
 
     @ElementCollection
-    private List<String> pdfFiles;
+    private List<String> uploadFiles;
 
     // 입장 인원 증가 메서드
     public void incrementParticipantCount() {

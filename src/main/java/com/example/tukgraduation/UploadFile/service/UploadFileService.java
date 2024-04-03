@@ -1,8 +1,9 @@
-package com.example.tukgraduation.pdf.service;
+package com.example.tukgraduation.UploadFile.service;
 
+import com.example.tukgraduation.UploadFile.domain.UploadFile;
+import com.example.tukgraduation.UploadFile.domain.UploadFile;
+import com.example.tukgraduation.UploadFile.repository.UploadFileRepository;
 import com.example.tukgraduation.chatroom.domain.Room;
-import com.example.tukgraduation.pdf.domain.PdfFile;
-import com.example.tukgraduation.pdf.repository.PdfFileRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,26 +19,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PdfFileService {
-    private final PdfFileRepository pdfFileRepository;
+public class UploadFileService {
+    private final UploadFileRepository uploadFileRepository;
     private final S3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public PdfFileService(PdfFileRepository pdfFileRepository, S3Client amazonS3Client) {
-        this.pdfFileRepository = pdfFileRepository;
+    public UploadFileService(UploadFileRepository uploadFileRepository, S3Client amazonS3Client) {
+        this.uploadFileRepository = uploadFileRepository;
         this.amazonS3Client = amazonS3Client;
     }
 
     @Transactional
-    public List<PdfFile> uploadAndSavePdfFiles(List<MultipartFile> files, Room room) {
+    public List<UploadFile> uploadAndSaveUploadFiles(List<MultipartFile> files, Room room) {
 
         if (files == null || files.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<PdfFile> savedFiles = new ArrayList<>();
+        List<UploadFile> savedFiles = new ArrayList<>();
 
         for (MultipartFile file : files) {
             String fileName = room.getRoomName() + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
@@ -56,13 +57,14 @@ public class PdfFileService {
                         .build()).toString();
 
 
-                PdfFile pdfFile = new PdfFile();
-                pdfFile.setFileName(file.getOriginalFilename());
-                pdfFile.setFileUrl(fileUrl);
-                pdfFile.setRoomId(room.getId());
-                pdfFileRepository.save(pdfFile);
+                UploadFile uploadFile = new UploadFile();
+                uploadFile.setFileName(file.getOriginalFilename());
+                uploadFile.setFileType(file.getContentType());
+                uploadFile.setFileUrl(fileUrl);
+                uploadFile.setRoomId(room.getId());
+                uploadFileRepository.save(uploadFile);
 
-                savedFiles.add(pdfFile);
+                savedFiles.add(uploadFile);
             } catch (IOException | AwsServiceException e) {
                 // 적절한 예외 처리를 여기서 진행
                 e.printStackTrace();

@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoomEnterRequest {
     private String entranceCode;
-    private Member member;
 }

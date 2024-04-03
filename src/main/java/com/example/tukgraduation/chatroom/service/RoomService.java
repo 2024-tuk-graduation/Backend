@@ -1,5 +1,6 @@
 package com.example.tukgraduation.chatroom.service;
 
+import com.example.tukgraduation.UploadFile.service.UploadFileService;
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.CodeMessage;
@@ -8,7 +9,6 @@ import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
 import com.example.tukgraduation.global.annotation.LoginMember;
-import com.example.tukgraduation.image.service.AmazonS3Service;
 import com.example.tukgraduation.member.domain.Member;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import com.example.tukgraduation.pdf.service.PdfFileService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,13 +29,13 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ParticipantRepository participantRepository;
-    private final PdfFileService pdfFileService;
+    private final UploadFileService uploadFileService;
 
 
 
     // 방 생성
     @Transactional
-    public Room createRoom(RoomCreateRequest request, @LoginMember Member loginMember, List<MultipartFile> pdfFiles) {
+    public Room createRoom(RoomCreateRequest request, @LoginMember Member loginMember, List<MultipartFile> uploadFiles) {
 
         String entranceCode = RandomStringUtils.randomAlphanumeric(6);
         Room room = Room.builder()
@@ -48,7 +47,8 @@ public class RoomService {
                 .template(request.getTemplate())
                 .build();
         roomRepository.save(room);
-        pdfFileService.uploadAndSavePdfFiles(pdfFiles, room);
+        uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
+        participantRepository.save(new Participant(loginMember.getNickname(), room));
         return room;
     }
 
@@ -106,11 +106,11 @@ public class RoomService {
         messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
     }
 
-    public boolean isNicknameExists(String entranceCode, String nickname) {
-        Room room = roomRepository.findByEntranceCode(entranceCode)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-        return participantRepository.findByRoomAndNickname(room, nickname).isPresent();
-    }
+//    public boolean isNicknameExists(String entranceCode, String nickname) {
+//        Room room = roomRepository.findByEntranceCode(entranceCode)
+//                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+//        return participantRepository.findByRoomAndNickname(room, nickname).isPresent();
+//    }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
