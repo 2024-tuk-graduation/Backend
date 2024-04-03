@@ -4,23 +4,22 @@ import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.CodeMessage;
 import com.example.tukgraduation.chatroom.dto.RoomCreateRequest;
-import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
 import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
 import com.example.tukgraduation.global.annotation.LoginMember;
+import com.example.tukgraduation.image.service.AmazonS3Service;
 import com.example.tukgraduation.member.domain.Member;
-import com.example.tukgraduation.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import com.example.tukgraduation.pdf.service.PdfFileService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,36 +29,34 @@ import java.util.stream.Collectors;
 public class RoomService {
     private final RoomRepository roomRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final MemberRepository memberRepository;
     private final ParticipantRepository participantRepository;
+    private final PdfFileService pdfFileService;
+
 
 
     // 방 생성
     @Transactional
-    public Room createRoom(RoomCreateRequest request, @LoginMember Member loginMember) {
+    public Room createRoom(RoomCreateRequest request, @LoginMember Member loginMember, List<MultipartFile> pdfFiles) {
 
         String entranceCode = RandomStringUtils.randomAlphanumeric(6);
         Room room = Room.builder()
                 .hostNickname(loginMember.getNickname())
+                .roomName(request.getRoomName())
                 .language(request.getLanguage())
                 .roomMaximumCount(request.getRoomMaximumCount())
                 .entranceCode(entranceCode)
+                .template(request.getTemplate())
                 .build();
         roomRepository.save(room);
+        pdfFileService.uploadAndSavePdfFiles(pdfFiles, room);
         return room;
     }
+
     // 방 입장 검증
     @Transactional
-    public RoomUpdateNotification enterRoom(String entranceCode, String nickname) {
+    public RoomUpdateNotification enterRoom(String entranceCode, Member loginMember) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
-
-        if (room.getHostNickname() == null) {
-            room.setHostNickname(nickname); // Set the first participant as the host
-        }
-
-        Participant participant = new Participant(nickname, room);
-        participantRepository.save(participant);
         room.incrementParticipantCount();
         roomRepository.save(room);
 
