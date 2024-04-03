@@ -1,5 +1,6 @@
 package com.example.tukgraduation.chatroom.domain;
 
+import com.example.tukgraduation.UploadFile.domain.UploadFile;
 import com.example.tukgraduation.global.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,9 +22,10 @@ public class Room extends BaseEntity{
     private String entranceCode; // 입장 코드
     private String hostNickname; // 호스트의 닉네임
     private String language; // 사용 언어
-    private int roomMaximumCount; // 방 인원 수
+    private int personnelCount; // 방 인원 수
     private int participantCount = 0; // 참가자 수
     private int template;
+
 
     @ElementCollection
     private List<String> uploadFiles;

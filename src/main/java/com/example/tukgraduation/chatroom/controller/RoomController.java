@@ -1,6 +1,5 @@
 package com.example.tukgraduation.chatroom.controller;
 
-import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.*;
 import com.example.tukgraduation.chatroom.service.RoomService;
 import com.example.tukgraduation.global.annotation.LoginMember;
@@ -38,8 +37,10 @@ public class RoomController {
 
         ObjectMapper mapper = new ObjectMapper();
         RoomCreateRequest roomCreateRequest = mapper.readValue(jsonRoomCreateRequest, RoomCreateRequest.class);
-        Room room = roomService.createRoom(roomCreateRequest, loginMember, uploadFiles);
-        ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, new RoomCreateResponse(room));
+        RoomCreateResponse roomCreateResponse = roomService.createRoom(roomCreateRequest, loginMember, uploadFiles);
+
+        // RoomCreateResponse roomResponse = roomService.createRoom(roomCreateRequest, uploadFiles);
+        ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, roomCreateResponse);
         return new ResponseEntity<>(resultResponse, HttpStatus.CREATED);
     }
 

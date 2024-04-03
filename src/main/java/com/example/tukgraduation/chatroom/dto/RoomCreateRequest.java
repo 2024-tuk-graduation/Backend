@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class RoomCreateRequest {
     private String language; // 사용 언어
     private int template;
-    private int roomMaximumCount;
+    private int personnelCount;
     private String roomName;
 
 }

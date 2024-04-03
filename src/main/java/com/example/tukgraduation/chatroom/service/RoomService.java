@@ -1,10 +1,12 @@
 package com.example.tukgraduation.chatroom.service;
 
+import com.example.tukgraduation.UploadFile.domain.UploadFile;
 import com.example.tukgraduation.UploadFile.service.UploadFileService;
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.CodeMessage;
 import com.example.tukgraduation.chatroom.dto.RoomCreateRequest;
+import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
 import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
@@ -35,21 +37,21 @@ public class RoomService {
 
     // 방 생성
     @Transactional
-    public Room createRoom(RoomCreateRequest request, @LoginMember Member loginMember, List<MultipartFile> uploadFiles) {
+    public RoomCreateResponse createRoom(RoomCreateRequest request, @LoginMember Member loginMember, List<MultipartFile> uploadFiles) {
 
         String entranceCode = RandomStringUtils.randomAlphanumeric(6);
         Room room = Room.builder()
                 .hostNickname(loginMember.getNickname())
                 .roomName(request.getRoomName())
                 .language(request.getLanguage())
-                .roomMaximumCount(request.getRoomMaximumCount())
+                .personnelCount(request.getPersonnelCount())
                 .entranceCode(entranceCode)
                 .template(request.getTemplate())
                 .build();
         roomRepository.save(room);
         uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
         participantRepository.save(new Participant(loginMember.getNickname(), room));
-        return room;
+        return uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
     }
 
     // 방 입장 검증
