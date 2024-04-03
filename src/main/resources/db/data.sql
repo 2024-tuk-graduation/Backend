@@ -1,3 +1,2 @@
-# INSERT INTO room (entrance_code, host_nickname, language, room_name, room_count, participant_count, created_at, updated_at, is_deleted)
-# VALUES ('1a2s3d', Null, 'python', 'Language Study', 4, 0, NOW(), NOW(), false);
-#
+INSERT INTO room (is_deleted, participant_count, personnel_count, template, created_at, updated_at, entrance_code, host_nickname, language, room_name, id)
+VALUES (false, 0, 6, 1, NOW(), NOW(), 'ABC123', 'hostName', 'Python', 'Study Group', 1);
