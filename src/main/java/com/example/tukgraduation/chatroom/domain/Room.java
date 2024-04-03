@@ -23,7 +23,7 @@ public class Room extends BaseEntity{
     private String language; // 사용 언어
     private int roomMaximumCount; // 방 인원 수
     private int participantCount = 0; // 참가자 수
-    private int templateId;
+    private int template;
 
     @ElementCollection
     private List<String> pdfFiles;
