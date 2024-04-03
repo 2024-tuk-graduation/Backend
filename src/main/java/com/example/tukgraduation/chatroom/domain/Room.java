@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Room extends BaseEntity{
@@ -38,10 +38,5 @@ public class Room extends BaseEntity{
     public void decrementParticipantCount() {
         this.participantCount--;
     }
-
-    public void setHostNickname(String hostNickname) {
-        this.hostNickname = hostNickname;
-    }
-
 }
 

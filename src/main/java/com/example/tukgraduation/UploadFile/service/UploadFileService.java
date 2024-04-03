@@ -85,10 +85,4 @@ public class UploadFileService {
 
         return new RoomCreateResponse(room, pdfUrls, codeUrls);
     }
-
-//    private String getFileUrl(String fileName) {
-//        // 버킷과 객체 키를 기반으로 S3 객체의 공개 URL을 생성하는 로직
-//        // 참고: 실제 환경에서는 생성된 객체 URL에 대한 액세스 권한이 필요할 수 있음
-//        return "https://" + bucket + ".s3.amazonaws.com/" + fileName;
-//    }
 }
