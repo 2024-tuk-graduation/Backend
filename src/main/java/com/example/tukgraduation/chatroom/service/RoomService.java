@@ -48,7 +48,7 @@ public class RoomService {
                 .entranceCode(entranceCode)
                 .template(request.getTemplate())
                 .build();
-        roomRepository.save(room);
+        room = roomRepository.save(room);
         uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
         participantRepository.save(new Participant(loginMember.getNickname(), room));
         return uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
