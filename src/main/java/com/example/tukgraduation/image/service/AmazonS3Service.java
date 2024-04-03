@@ -11,6 +11,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AmazonS3Service implements ImageService {
@@ -31,6 +33,7 @@ public class AmazonS3Service implements ImageService {
 
         return putImage(fileName, multipartFile);
     }
+
 
     public String putImage(String fileName, MultipartFile multipartFile) {
         try {
@@ -57,4 +60,5 @@ public class AmazonS3Service implements ImageService {
             throw new S3UploadException();
         }
     }
+
 }

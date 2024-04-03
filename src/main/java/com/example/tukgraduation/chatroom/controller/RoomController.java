@@ -8,13 +8,16 @@ import com.example.tukgraduation.global.annotation.LoginRequired;
 import com.example.tukgraduation.global.result.ResultCode;
 import com.example.tukgraduation.global.result.ResultResponse;
 import com.example.tukgraduation.member.domain.Member;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
@@ -26,40 +29,35 @@ public class RoomController {
         this.roomService = roomService;
     }
     // 방 생성
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @LoginRequired
-    public ResponseEntity<ResultResponse<RoomCreateResponse>> createRoom(@RequestBody RoomCreateRequest roomCreateRequest,
-                                                                         @LoginMember @Parameter(hidden = true) Member loginMember) {
-        Room room = roomService.createRoom(roomCreateRequest, loginMember);
+    public ResponseEntity<ResultResponse<RoomCreateResponse>> createRoom(
+            @RequestPart("data") String jsonRoomCreateRequest,
+            @LoginMember @Parameter(hidden = true) Member loginMember,
+            @RequestPart(value = "uploadFiles", required = false)  List<MultipartFile> uploadFiles) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        RoomCreateRequest roomCreateRequest = mapper.readValue(jsonRoomCreateRequest, RoomCreateRequest.class);
+        Room room = roomService.createRoom(roomCreateRequest, loginMember, uploadFiles);
         ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, new RoomCreateResponse(room));
         return new ResponseEntity<>(resultResponse, HttpStatus.CREATED);
     }
 
-    // 방 입장
-//    @PostMapping("/entrance")
-//    public ResponseEntity<String> enterRoom(@RequestBody RoomEnterRequest request) {
-//        boolean isHost = roomService.verifyEntrance(request.getEntranceCode(), request.getNickname());
-//        if (isHost) {
-//            return ResponseEntity.ok("호스트로 입장했습니다.");
-//        } else {
-//            return ResponseEntity.ok("게스트로 입장했습니다.");
-//        }
-//    }
+
 
     @PostMapping("/entrance")
-    public ResponseEntity<?> enterRoom(@RequestBody RoomEnterRequest request) {
+    @LoginRequired
+    public ResponseEntity<ResultResponse<RoomUpdateNotification>> enterRoom(
+            @RequestBody RoomEnterRequest request,
+            @LoginMember @Parameter(hidden = true) Member loginMember){
 
-        if (roomService.isNicknameExists(request.getEntranceCode(), request.getNickname())) {
-            return ResponseEntity.badRequest().body("이미 존재하는 닉네임입니다.");
-        }
+//        if (roomService.isNicknameExists(request.getEntranceCode(), )) {
+//            return ResponseEntity.badRequest().body("이미 존재하는 닉네임입니다.");
+//        }
 
-        RoomUpdateNotification roomUpdateNotification = roomService.enterRoom(request.getEntranceCode(), request.getNickname());
-
-        if (roomUpdateNotification != null) {
-            return ResponseEntity.ok(roomUpdateNotification);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
+        RoomUpdateNotification roomUpdateNotification = roomService.enterRoom(request.getEntranceCode(), loginMember);
+        ResultResponse<RoomUpdateNotification> resultResponse = new ResultResponse<>(ResultCode.ROOM_ENTER_SUCCESS, roomUpdateNotification);
+        return new ResponseEntity<>(resultResponse, HttpStatus.OK);
 
     }
 

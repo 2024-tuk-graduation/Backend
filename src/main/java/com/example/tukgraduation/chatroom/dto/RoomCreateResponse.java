@@ -12,6 +12,7 @@ public class RoomCreateResponse {
     private String language;
     private int roomMaximumCount;
     private String entranceCode;
+    private int template;
 
     public RoomCreateResponse() {
     }
@@ -20,6 +21,7 @@ public class RoomCreateResponse {
         this.language = room.getLanguage();
         this.roomMaximumCount = room.getRoomMaximumCount();
         this.entranceCode = room.getEntranceCode();
+        this.template = room.getTemplate();
     }
 
 
