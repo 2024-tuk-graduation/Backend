@@ -1,2 +1,5 @@
+INSERT INTO member (is_deleted, created_at, updated_at,password, nickname,username, id)
+VALUES (false, NOW(), NOW(), '1234', 'hostName', 'hostName', 1);
+
 INSERT INTO room (is_deleted, participant_count, personnel_count, template, created_at, updated_at, entrance_code, host_nickname, language, room_name, id)
 VALUES (false, 0, 6, 1, NOW(), NOW(), 'ABC123', 'hostName', 'Python', 'Study Group', 1);
