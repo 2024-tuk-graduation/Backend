@@ -1,7 +1,7 @@
-package com.example.tukgraduation.UploadFile.service;
+package com.example.tukgraduation.uploadfile.service;
 
-import com.example.tukgraduation.UploadFile.domain.UploadFile;
-import com.example.tukgraduation.UploadFile.repository.UploadFileRepository;
+import com.example.tukgraduation.uploadfile.domain.UploadFile;
+import com.example.tukgraduation.uploadfile.repository.UploadFileRepository;
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,28 +34,22 @@ public class UploadFileService {
     @Transactional
     public RoomCreateResponse uploadAndSaveUploadFiles(List<MultipartFile> files, Room room) {
 
-
         List<String> pdfUrls = new ArrayList<>();
         List<String> codeUrls = new ArrayList<>();
-
 
         if (files == null || files.isEmpty()) {
             // 파일이 없어도 방 생성 정보를 반환할 수 있도록 RoomCreateResponse 객체를 생성합니다.
             return new RoomCreateResponse(room, null, null);
         }
-
         List<UploadFile> savedFiles = new ArrayList<>();
-
         for (MultipartFile file : files) {
             String fileName = room.getRoomName() + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String fileType = file.getContentType(); // 파일 타입을 구분하기 위해 파일의 MIME 타입을 가져옵니다.
-
             try {
                 PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                         .bucket(bucket)
                         .key(fileName)
                         .build();
-
                 RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
                 amazonS3Client.putObject(putObjectRequest, requestBody);
                 String fileUrl = amazonS3Client.utilities().getUrl(GetUrlRequest.builder()
@@ -65,7 +59,8 @@ public class UploadFileService {
 
                 if ("application/pdf".equals(fileType)) {
                     pdfUrls.add(fileUrl);
-                } else if ("application/octet-stream".equals(fileType)) {
+                }
+                else if ("application/octet-stream".equals(fileType)) {
                     codeUrls.add(fileUrl);
                 }
 
@@ -82,7 +77,6 @@ public class UploadFileService {
                 e.printStackTrace();
             }
         }
-
         return new RoomCreateResponse(room, pdfUrls, codeUrls);
     }
 }

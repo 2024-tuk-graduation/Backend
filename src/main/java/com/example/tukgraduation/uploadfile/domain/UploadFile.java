@@ -1,4 +1,4 @@
-package com.example.tukgraduation.UploadFile.domain;
+package com.example.tukgraduation.uploadfile.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
