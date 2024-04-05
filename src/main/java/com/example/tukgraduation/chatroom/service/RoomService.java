@@ -1,7 +1,6 @@
 package com.example.tukgraduation.chatroom.service;
 
-import com.example.tukgraduation.UploadFile.domain.UploadFile;
-import com.example.tukgraduation.UploadFile.service.UploadFileService;
+import com.example.tukgraduation.uploadfile.service.UploadFileService;
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
 import com.example.tukgraduation.chatroom.dto.CodeMessage;

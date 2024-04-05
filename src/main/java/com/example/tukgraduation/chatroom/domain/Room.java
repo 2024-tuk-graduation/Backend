@@ -1,6 +1,5 @@
 package com.example.tukgraduation.chatroom.domain;
 
-import com.example.tukgraduation.UploadFile.domain.UploadFile;
 import com.example.tukgraduation.global.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
