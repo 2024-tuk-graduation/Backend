@@ -39,7 +39,6 @@ public class RoomController {
         RoomCreateRequest roomCreateRequest = mapper.readValue(jsonRoomCreateRequest, RoomCreateRequest.class);
         RoomCreateResponse roomCreateResponse = roomService.createRoom(roomCreateRequest, loginMember, uploadFiles);
 
-        // RoomCreateResponse roomResponse = roomService.createRoom(roomCreateRequest, uploadFiles);
         ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, roomCreateResponse);
         return new ResponseEntity<>(resultResponse, HttpStatus.CREATED);
     }
@@ -51,15 +50,9 @@ public class RoomController {
     public ResponseEntity<ResultResponse<RoomUpdateNotification>> enterRoom(
             @RequestBody RoomEnterRequest request,
             @LoginMember @Parameter(hidden = true) Member loginMember){
-
-//        if (roomService.isNicknameExists(request.getEntranceCode(), )) {
-//            return ResponseEntity.badRequest().body("이미 존재하는 닉네임입니다.");
-//        }
-
         RoomUpdateNotification roomUpdateNotification = roomService.enterRoom(request.getEntranceCode(), loginMember);
         ResultResponse<RoomUpdateNotification> resultResponse = new ResultResponse<>(ResultCode.ROOM_ENTER_SUCCESS, roomUpdateNotification);
         return new ResponseEntity<>(resultResponse, HttpStatus.OK);
-
     }
 
     @PostMapping("/leave")
@@ -74,4 +67,9 @@ public class RoomController {
         }
     }
 
+    @GetMapping("/{roomId}")
+    public ResponseEntity<ResultResponse<RoomInfoResponse>> getRoomInfo(@PathVariable Long roomId) {
+        ResultResponse<RoomInfoResponse> roomInfoResponse = new ResultResponse<>(ResultCode.ROOM_INFO_SUCCESS, roomService.getRoomInfo(roomId));
+        return ResponseEntity.ok(roomInfoResponse);
+    }
 }
