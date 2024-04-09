@@ -68,9 +68,10 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/{roomId}")
-    public ResponseEntity<ResultResponse<RoomInfoResponse>> getRoomInfo(@PathVariable Long roomId) {
-        ResultResponse<RoomInfoResponse> roomInfoResponse = new ResultResponse<>(ResultCode.ROOM_INFO_SUCCESS, roomService.getRoomInfo(roomId));
-        return ResponseEntity.ok(roomInfoResponse);
+    @GetMapping("/{entranceCode}")
+    public ResponseEntity<ResultResponse<RoomInfoResponse>> getRoomInfoByEntranceCode(@PathVariable String entranceCode) {
+        RoomInfoResponse roomInfo = roomService.getRoomInfoByEntranceCode(entranceCode);
+        ResultResponse<RoomInfoResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_INFO_SUCCESS, roomInfo);
+        return ResponseEntity.ok(resultResponse);
     }
 }

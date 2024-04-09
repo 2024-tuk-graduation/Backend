@@ -34,7 +34,7 @@ public class RoomCreateResponse {
         }
     }
 
-        public RoomCreateResponse(Room room, List<String> pdfUrls, List<String> codeUrls) {
+    public RoomCreateResponse(Room room, List<String> pdfUrls, List<String> codeUrls) {
         this.roomName = room.getRoomName();
         this.hostNickname = room.getHostNickname();
         this.personnelCount = room.getPersonnelCount();

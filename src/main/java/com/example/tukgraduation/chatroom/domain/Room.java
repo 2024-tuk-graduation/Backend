@@ -26,6 +26,7 @@ public class Room extends BaseEntity{
     private int template;
 
 
+
     @ElementCollection
     private List<String> uploadFiles;
 

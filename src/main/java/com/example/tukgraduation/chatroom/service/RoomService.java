@@ -2,7 +2,10 @@ package com.example.tukgraduation.chatroom.service;
 
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
-import com.example.tukgraduation.chatroom.dto.*;
+import com.example.tukgraduation.chatroom.dto.RoomCreateRequest;
+import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
+import com.example.tukgraduation.chatroom.dto.RoomInfoResponse;
+import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
 import com.example.tukgraduation.global.annotation.LoginMember;
@@ -17,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -60,7 +62,7 @@ public class RoomService {
         // 방의 현재 참가자 목록을 갱신
         List<String> nicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
-                .collect(Collectors.toList());
+                .toList();
 
         // 웹소켓을 통해 참가자 수와 닉네임 목록을 실시간으로 방송
         messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), nicknames.size(), room.getHostNickname(),nicknames));
@@ -87,7 +89,7 @@ public class RoomService {
         // 남아있는 참가자 목록 업데이트
         List<String> remainingNicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
-                .collect(Collectors.toList());
+                .toList();
 
         RoomUpdateNotification notification = new RoomUpdateNotification(
                 room.getId(),
@@ -102,16 +104,13 @@ public class RoomService {
     private void broadcastRoomUpdate(RoomUpdateNotification notification) {
         messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
     }
+    public RoomInfoResponse getRoomInfoByEntranceCode(String entranceCode) {
+        Room room = roomRepository.findByEntranceCode(entranceCode)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
 
-    public void broadcastCodeFromHost(CodeMessage codeMessage) {
-        messagingTemplate.convertAndSend("/sub/code", codeMessage);
-    }
-    public RoomInfoResponse getRoomInfo(Long roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
         List<String> participantNicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
-                .collect(Collectors.toList());
+                .toList();
 
         return RoomInfoResponse.builder()
                 .roomId(room.getId())
