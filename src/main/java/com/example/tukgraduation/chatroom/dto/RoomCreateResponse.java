@@ -20,7 +20,6 @@ public class RoomCreateResponse {
     private CodeUrls codeUrls;
     public RoomCreateResponse() {
     }
-
     @Getter
     @Setter
     public static class CodeUrls {
@@ -32,6 +31,20 @@ public class RoomCreateResponse {
             this.language = language;
             this.urls = urls;
         }
+    }
+
+    @Getter
+    @Setter
+    public static class Entrance {
+        private String entranceCode;
+
+        public Entrance(String entranceCode) {
+            this.entranceCode = entranceCode;
+        }
+    }
+
+    public RoomCreateResponse(String entranceCode) {
+        this.entranceCode = entranceCode;
     }
 
     public RoomCreateResponse(Room room, List<String> pdfUrls, List<String> codeUrls) {
