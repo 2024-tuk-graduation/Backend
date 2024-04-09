@@ -60,6 +60,9 @@ public class UploadFileService {
                 if ("application/pdf".equals(fileType)) {
                     pdfUrls.add(fileUrl);
                 }
+                else if ("text/x-python-script".equals(fileType)) {
+                    codeUrls.add(fileUrl);
+                }
                 else if ("application/octet-stream".equals(fileType)) {
                     codeUrls.add(fileUrl);
                 }
