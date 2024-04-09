@@ -1,26 +1,20 @@
 package com.example.tukgraduation.chatroom.service;
 
-import com.example.tukgraduation.uploadfile.service.UploadFileService;
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
-import com.example.tukgraduation.chatroom.dto.CodeMessage;
-import com.example.tukgraduation.chatroom.dto.RoomCreateRequest;
-import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
-import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
+import com.example.tukgraduation.chatroom.dto.*;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
 import com.example.tukgraduation.global.annotation.LoginMember;
 import com.example.tukgraduation.member.domain.Member;
+import com.example.tukgraduation.uploadfile.service.UploadFileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +48,6 @@ public class RoomService {
         participantRepository.save(new Participant(loginMember.getNickname(), room));
         return uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
     }
-
     // 방 입장 검증
     @Transactional
     public RoomUpdateNotification enterRoom(String entranceCode, Member loginMember) {
@@ -110,69 +103,22 @@ public class RoomService {
         messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
     }
 
-//    public boolean isNicknameExists(String entranceCode, String nickname) {
-//        Room room = roomRepository.findByEntranceCode(entranceCode)
-//                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-//        return participantRepository.findByRoomAndNickname(room, nickname).isPresent();
-//    }
-
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String nickname = (String) headerAccessor.getSessionAttributes().get("nickname");
-        Long roomId = (Long) headerAccessor.getSessionAttributes().get("roomId");
-
-        if(nickname != null && roomId != null) {
-            RoomUpdateNotification notification = leaveRoom(roomId, nickname);
-            messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
-        }
-    }
-
     public void broadcastCodeFromHost(CodeMessage codeMessage) {
         messagingTemplate.convertAndSend("/sub/code", codeMessage);
     }
+    public RoomInfoResponse getRoomInfo(Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
 
-    public void receiveCodeFromHost(String workspaceId, CodeMessage codeMessage, boolean isHost) {
-        if (isHost) {
-            // 호스트인 경우에만 메시지를 처리
-            broadcastCodeFromHost(codeMessage);
-        }
-        
+        return RoomInfoResponse.builder()
+                .roomId(room.getId())
+                .roomName(room.getRoomName())
+                .language(room.getLanguage())
+                .personnelCount(room.getPersonnelCount())
+                .entranceCode(room.getEntranceCode())
+                .template(room.getTemplate())
+                .build();
     }
-
-//    private void broadcastRoomUpdate(Room room) {
-//        List<String> nicknames = participantRepository.findByRoom(room).stream()
-//                .map(Participant::getNickname)
-//                .collect(Collectors.toList());
-//
-//        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), room.getParticipantCount(), nicknames));
-//    }
-
-    // 방 입장 검증
-//    public boolean verifyEntrance(String entranceCode, String nickname) {
-//        Optional<Room> roomOptional = roomRepository.findByEntranceCode(entranceCode);
-//        if (roomOptional.isPresent()) {
-//            Room room = roomOptional.get();
-//            // 닉네임 저장 로직 추가
-//            Participant participant = new Participant(nickname, room);
-//            participantRepository.save(participant);
-//            // 호스트인지 검증
-//            return Objects.equals(room.getHostNickname(), nickname);
-//        }
-//        return false;
-//    }
-
-//    public boolean verifyEntrance(String entranceCode) {
-//        return roomRepository.findByEntranceCode(entranceCode).isPresent();
-//    }
-//
-//    public Room updateParticipantCount(Long roomId) {
-//        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found."));
-//        room.incrementParticipantCount();
-//        return roomRepository.save(room);
-//    }
-
-
 }
 
 
