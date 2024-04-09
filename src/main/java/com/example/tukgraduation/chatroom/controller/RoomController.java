@@ -39,6 +39,7 @@ public class RoomController {
         RoomCreateRequest roomCreateRequest = mapper.readValue(jsonRoomCreateRequest, RoomCreateRequest.class);
         RoomCreateResponse roomCreateResponse = roomService.createRoom(roomCreateRequest, loginMember, uploadFiles);
 
+        // RoomCreateResponse roomResponse = roomService.createRoom(roomCreateRequest, uploadFiles);
         ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, roomCreateResponse);
         return new ResponseEntity<>(resultResponse, HttpStatus.CREATED);
     }

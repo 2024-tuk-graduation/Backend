@@ -109,6 +109,9 @@ public class RoomService {
     public RoomInfoResponse getRoomInfo(Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
+        List<String> participantNicknames = participantRepository.findByRoom(room).stream()
+                .map(Participant::getNickname)
+                .collect(Collectors.toList());
 
         return RoomInfoResponse.builder()
                 .roomId(room.getId())
@@ -117,6 +120,8 @@ public class RoomService {
                 .personnelCount(room.getPersonnelCount())
                 .entranceCode(room.getEntranceCode())
                 .template(room.getTemplate())
+                .hostNickname(room.getHostNickname()) // 호스트 닉네임 추가
+                .participantNicknames(participantNicknames) // 참여 인원의 닉네임 목록 추가
                 .build();
     }
 }
