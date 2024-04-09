@@ -22,7 +22,7 @@ public class Room extends BaseEntity{
     private String hostNickname; // 호스트의 닉네임
     private String language; // 사용 언어
     private int personnelCount; // 방 인원 수
-    private int participantCount = 0; // 참가자 수
+    private int participantCount = 1; // 참가자 수
     private int template;
 
 

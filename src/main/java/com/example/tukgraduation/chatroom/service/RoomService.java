@@ -62,7 +62,8 @@ public class RoomService {
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
         room.incrementParticipantCount();
         roomRepository.save(room);
-
+        participantRepository.save(new Participant(loginMember.getNickname(), room));
+        room.incrementParticipantCount();
         // 방의 현재 참가자 목록을 갱신
         List<String> nicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
