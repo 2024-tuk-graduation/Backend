@@ -48,11 +48,11 @@ public class RoomController {
 
     @PostMapping("/entrance")
     @LoginRequired
-    public ResponseEntity<ResultResponse<RoomUpdateNotification>> enterRoom(
+    public ResponseEntity<ResultResponse<RoomEnterResponse>> enterRoom(
             @RequestBody RoomEnterRequest request,
             @LoginMember @Parameter(hidden = true) Member loginMember){
-        RoomUpdateNotification roomUpdateNotification = roomService.enterRoom(request.getEntranceCode(), loginMember);
-        ResultResponse<RoomUpdateNotification> resultResponse = new ResultResponse<>(ResultCode.ROOM_ENTER_SUCCESS, roomUpdateNotification);
+        RoomEnterResponse roomEnterResponse = roomService.enterRoom(request.getEntranceCode(), loginMember);
+        ResultResponse<RoomEnterResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_ENTER_SUCCESS, roomEnterResponse);
         return new ResponseEntity<>(resultResponse, HttpStatus.OK);
     }
 

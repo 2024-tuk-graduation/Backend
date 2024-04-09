@@ -2,10 +2,7 @@ package com.example.tukgraduation.chatroom.service;
 
 import com.example.tukgraduation.chatroom.domain.Participant;
 import com.example.tukgraduation.chatroom.domain.Room;
-import com.example.tukgraduation.chatroom.dto.RoomCreateRequest;
-import com.example.tukgraduation.chatroom.dto.RoomCreateResponse;
-import com.example.tukgraduation.chatroom.dto.RoomInfoResponse;
-import com.example.tukgraduation.chatroom.dto.RoomUpdateNotification;
+import com.example.tukgraduation.chatroom.dto.*;
 import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
 import com.example.tukgraduation.global.annotation.LoginMember;
@@ -52,7 +49,7 @@ public class RoomService {
     }
     // 방 입장 검증
     @Transactional
-    public RoomUpdateNotification enterRoom(String entranceCode, Member loginMember) {
+    public RoomEnterResponse enterRoom(String entranceCode, Member loginMember) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
         room.incrementParticipantCount();
@@ -65,13 +62,8 @@ public class RoomService {
                 .toList();
 
         // 웹소켓을 통해 참가자 수와 닉네임 목록을 실시간으로 방송
-        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), nicknames.size(), room.getHostNickname(),nicknames));
-        return RoomUpdateNotification.builder()
-                .roomId(room.getId())
-                .participantCount(room.getParticipantCount())
-                .participantNicknames(nicknames)
-                .hostNickname(room.getHostNickname())
-                .build();
+        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getPersonnelCount(),nicknames));
+        return new RoomEnterResponse(room.getEntranceCode());
     }
 
     @Transactional
@@ -92,9 +84,7 @@ public class RoomService {
                 .toList();
 
         RoomUpdateNotification notification = new RoomUpdateNotification(
-                room.getId(),
-                room.getParticipantCount(),
-                room.getHostNickname(),
+                room.getPersonnelCount(),
                 remainingNicknames
         );
         broadcastRoomUpdate(notification);
