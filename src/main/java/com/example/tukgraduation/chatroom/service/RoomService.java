@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -50,7 +49,7 @@ public class RoomService {
     }
     // 방 입장 검증
     @Transactional
-    public RoomUpdateNotification enterRoom(String entranceCode, Member loginMember) {
+    public RoomEnterResponse enterRoom(String entranceCode, Member loginMember) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
         room.incrementParticipantCount();
@@ -60,16 +59,11 @@ public class RoomService {
         // 방의 현재 참가자 목록을 갱신
         List<String> nicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
-                .collect(Collectors.toList());
+                .toList();
 
         // 웹소켓을 통해 참가자 수와 닉네임 목록을 실시간으로 방송
-        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getId(), nicknames.size(), room.getHostNickname(),nicknames));
-        return RoomUpdateNotification.builder()
-                .roomId(room.getId())
-                .participantCount(room.getParticipantCount())
-                .participantNicknames(nicknames)
-                .hostNickname(room.getHostNickname())
-                .build();
+        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getPersonnelCount(),nicknames));
+        return new RoomEnterResponse(room.getEntranceCode());
     }
 
     @Transactional
@@ -87,12 +81,10 @@ public class RoomService {
         // 남아있는 참가자 목록 업데이트
         List<String> remainingNicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
-                .collect(Collectors.toList());
+                .toList();
 
         RoomUpdateNotification notification = new RoomUpdateNotification(
-                room.getId(),
-                room.getParticipantCount(),
-                room.getHostNickname(),
+                room.getPersonnelCount(),
                 remainingNicknames
         );
         broadcastRoomUpdate(notification);
@@ -102,13 +94,13 @@ public class RoomService {
     private void broadcastRoomUpdate(RoomUpdateNotification notification) {
         messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
     }
+    public RoomInfoResponse getRoomInfoByEntranceCode(String entranceCode) {
+        Room room = roomRepository.findByEntranceCode(entranceCode)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
 
-    public void broadcastCodeFromHost(CodeMessage codeMessage) {
-        messagingTemplate.convertAndSend("/sub/code", codeMessage);
-    }
-    public RoomInfoResponse getRoomInfo(Long roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
+        List<String> participantNicknames = participantRepository.findByRoom(room).stream()
+                .map(Participant::getNickname)
+                .toList();
 
         return RoomInfoResponse.builder()
                 .roomId(room.getId())
@@ -117,6 +109,8 @@ public class RoomService {
                 .personnelCount(room.getPersonnelCount())
                 .entranceCode(room.getEntranceCode())
                 .template(room.getTemplate())
+                .hostNickname(room.getHostNickname()) // 호스트 닉네임 추가
+                .participantNicknames(participantNicknames) // 참여 인원의 닉네임 목록 추가
                 .build();
     }
 }

@@ -39,7 +39,8 @@ public class RoomController {
         RoomCreateRequest roomCreateRequest = mapper.readValue(jsonRoomCreateRequest, RoomCreateRequest.class);
         RoomCreateResponse roomCreateResponse = roomService.createRoom(roomCreateRequest, loginMember, uploadFiles);
 
-        ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, roomCreateResponse);
+        RoomCreateResponse.Entrance response = new RoomCreateResponse.Entrance(roomCreateResponse.getEntranceCode());
+        ResultResponse<RoomCreateResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_CREATE_SUCCESS, response);
         return new ResponseEntity<>(resultResponse, HttpStatus.CREATED);
     }
 
@@ -47,11 +48,11 @@ public class RoomController {
 
     @PostMapping("/entrance")
     @LoginRequired
-    public ResponseEntity<ResultResponse<RoomUpdateNotification>> enterRoom(
+    public ResponseEntity<ResultResponse<RoomEnterResponse>> enterRoom(
             @RequestBody RoomEnterRequest request,
             @LoginMember @Parameter(hidden = true) Member loginMember){
-        RoomUpdateNotification roomUpdateNotification = roomService.enterRoom(request.getEntranceCode(), loginMember);
-        ResultResponse<RoomUpdateNotification> resultResponse = new ResultResponse<>(ResultCode.ROOM_ENTER_SUCCESS, roomUpdateNotification);
+        RoomEnterResponse roomEnterResponse = roomService.enterRoom(request.getEntranceCode(), loginMember);
+        ResultResponse<RoomEnterResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_ENTER_SUCCESS, roomEnterResponse);
         return new ResponseEntity<>(resultResponse, HttpStatus.OK);
     }
 
@@ -67,9 +68,10 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/{roomId}")
-    public ResponseEntity<ResultResponse<RoomInfoResponse>> getRoomInfo(@PathVariable Long roomId) {
-        ResultResponse<RoomInfoResponse> roomInfoResponse = new ResultResponse<>(ResultCode.ROOM_INFO_SUCCESS, roomService.getRoomInfo(roomId));
-        return ResponseEntity.ok(roomInfoResponse);
+    @GetMapping("/{entranceCode}")
+    public ResponseEntity<ResultResponse<RoomInfoResponse>> getRoomInfoByEntranceCode(@PathVariable String entranceCode) {
+        RoomInfoResponse roomInfo = roomService.getRoomInfoByEntranceCode(entranceCode);
+        ResultResponse<RoomInfoResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_INFO_SUCCESS, roomInfo);
+        return ResponseEntity.ok(resultResponse);
     }
 }

@@ -20,7 +20,6 @@ public class RoomCreateResponse {
     private CodeUrls codeUrls;
     public RoomCreateResponse() {
     }
-
     @Getter
     @Setter
     public static class CodeUrls {
@@ -34,7 +33,21 @@ public class RoomCreateResponse {
         }
     }
 
-        public RoomCreateResponse(Room room, List<String> pdfUrls, List<String> codeUrls) {
+    @Getter
+    @Setter
+    public static class Entrance {
+        private String entranceCode;
+
+        public Entrance(String entranceCode) {
+            this.entranceCode = entranceCode;
+        }
+    }
+
+    public RoomCreateResponse(String entranceCode) {
+        this.entranceCode = entranceCode;
+    }
+
+    public RoomCreateResponse(Room room, List<String> pdfUrls, List<String> codeUrls) {
         this.roomName = room.getRoomName();
         this.hostNickname = room.getHostNickname();
         this.personnelCount = room.getPersonnelCount();

@@ -8,16 +8,12 @@ import java.util.List;
 @Getter
 @Builder
 public class RoomUpdateNotification {
-    private Long roomId;
-    private int participantCount;
-    private String hostNickname;
+    private int personnelCount;
     private List<String> participantNicknames;
 
-    // 생성자를 public으로 선언
-    public RoomUpdateNotification(Long roomId, int participantCount, String  hostNickname, List<String> participantNicknames) {
-        this.roomId = roomId;
-        this.participantCount = participantCount;
+public RoomUpdateNotification(int personnelCount, List<String> participantNicknames) {
+        this.personnelCount = personnelCount;
         this.participantNicknames = participantNicknames;
-        this.hostNickname = hostNickname;
     }
+
 }
