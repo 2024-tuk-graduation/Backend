@@ -18,6 +18,9 @@ public enum ResultCode {
     ROOM_ENTER_SUCCESS("ROO2", 200, "방 입장 성공"),
     ROOM_INFO_SUCCESS("ROO3", 200, "방 정보 조회 성공"),
 
+
+    //Compile
+    COMPILE_SUCCESS("C001", 200, "컴파일 성공"),
     ;
 
     private final String code;
