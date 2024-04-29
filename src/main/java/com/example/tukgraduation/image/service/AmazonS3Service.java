@@ -6,13 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class AmazonS3Service implements ImageService {
@@ -26,8 +25,14 @@ public class AmazonS3Service implements ImageService {
         this.amazonS3Client = amazonS3Client;
     }
 
+
     @Override
     public String upload(String username, MultipartFile multipartFile) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            String fileName = String.join("/",username,
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss.SSSSSS")));
+        }
+
         String fileName = String.join("/", username,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss.SSSSSS")));
 
@@ -59,6 +64,15 @@ public class AmazonS3Service implements ImageService {
         } catch (Exception e) {
             throw new S3UploadException();
         }
+    }
+
+    public void createFolder(String folderPath) {
+        String key = folderPath.endsWith("/") ? folderPath : folderPath + "/";
+        amazonS3Client.putObject(PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .build(),
+                RequestBody.empty());
     }
 
 }

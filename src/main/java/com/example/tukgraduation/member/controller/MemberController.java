@@ -33,7 +33,7 @@ public class MemberController {
     @Operation(summary = "회원가입", description = "회원가입 기능")
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResultResponse<MemberCreateRequest>> signUp(@RequestPart("data") String jsonMemberCreateRequest,
-                                                                      @RequestPart("part") MultipartFile multipartFile) throws JsonProcessingException {
+                                                                      @RequestPart(value = "part", required = false) MultipartFile multipartFile) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         MemberCreateRequest memberCreateRequest = mapper.readValue(jsonMemberCreateRequest, MemberCreateRequest.class);
         Member member = memberService.register(memberCreateRequest, multipartFile);

@@ -16,12 +16,15 @@ public class MemberService extends BaseEntity {
     private final MemberRepository memberRepository;
     private final AmazonS3Service amazonS3Service;
 
-    public boolean isDuplicatedUsername(String username) {
-        return memberRepository.existsByUsername(username);
-    }
-
     public Member register(MemberCreateRequest requestDto, MultipartFile multipartFile) {
-        String profileImageUrl = amazonS3Service.upload(requestDto.getUsername(), multipartFile);
+
+        String profileImageUrl;
+        if (multipartFile == null) {
+            profileImageUrl = "https://tukgraduation.s3.ap-northeast-2.amazonaws.com/default_folder/defualt_profile.svg";
+        }
+        else {
+            profileImageUrl = amazonS3Service.upload(requestDto.getUsername(), multipartFile);
+        }
         Member member = Member.builder()
                 .username(requestDto.getUsername())
                 .nickname(requestDto.getNickname())
@@ -29,6 +32,10 @@ public class MemberService extends BaseEntity {
                 .profileImageUrl(profileImageUrl)
                 .build();
         return memberRepository.save(member);
+    }
+
+    public boolean isDuplicatedUsername(String username) {
+        return memberRepository.existsByUsername(username);
     }
 
     public Member findUserById(Long userId) {
