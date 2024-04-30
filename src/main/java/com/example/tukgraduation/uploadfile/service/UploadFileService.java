@@ -41,7 +41,6 @@ public class UploadFileService {
             // 파일이 없어도 방 생성 정보를 반환할 수 있도록 RoomCreateResponse 객체를 생성합니다.
             return new RoomCreateResponse(room, null, null);
         }
-        List<UploadFile> savedFiles = new ArrayList<>();
         for (MultipartFile file : files) {
             String fileName = room.getRoomName() + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String fileType = file.getContentType(); // 파일 타입을 구분하기 위해 파일의 MIME 타입을 가져옵니다.
@@ -74,7 +73,6 @@ public class UploadFileService {
                 uploadFile.setRoomId(room.getId());
                 uploadFileRepository.save(uploadFile);
 
-                savedFiles.add(uploadFile);
             } catch (IOException | AwsServiceException e) {
                 // 적절한 예외 처리를 여기서 진행
                 e.printStackTrace();

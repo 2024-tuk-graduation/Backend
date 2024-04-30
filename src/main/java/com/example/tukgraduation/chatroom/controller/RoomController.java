@@ -70,7 +70,7 @@ public class RoomController {
 
     @GetMapping("/{entranceCode}")
     public ResponseEntity<ResultResponse<RoomInfoResponse>> getRoomInfoByEntranceCode(@PathVariable String entranceCode) {
-        RoomInfoResponse roomInfo = roomService.getRoomInfoByEntranceCode(entranceCode);
+        RoomInfoResponse roomInfo = roomService.getRoomInfoWithFiles(entranceCode);
         ResultResponse<RoomInfoResponse> resultResponse = new ResultResponse<>(ResultCode.ROOM_INFO_SUCCESS, roomInfo);
         return ResponseEntity.ok(resultResponse);
     }
