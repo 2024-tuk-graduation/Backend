@@ -22,6 +22,7 @@ public class RoomInfoResponse {
     private List<String> participantNicknames; // 참여 인원의 닉네임 목록
     private CodeUrls codeUrls;
     private List<String> pdfUrls;
+
     @Getter
     @Setter
     public static class CodeUrls {

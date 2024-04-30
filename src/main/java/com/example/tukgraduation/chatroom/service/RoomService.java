@@ -7,6 +7,8 @@ import com.example.tukgraduation.chatroom.repository.ParticipantRepository;
 import com.example.tukgraduation.chatroom.repository.RoomRepository;
 import com.example.tukgraduation.global.annotation.LoginMember;
 import com.example.tukgraduation.member.domain.Member;
+import com.example.tukgraduation.uploadfile.domain.UploadFile;
+import com.example.tukgraduation.uploadfile.repository.UploadFileRepository;
 import com.example.tukgraduation.uploadfile.service.UploadFileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,6 +29,7 @@ public class RoomService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ParticipantRepository participantRepository;
     private final UploadFileService uploadFileService;
+    private final UploadFileRepository uploadFileRepository;
 
 
 
@@ -43,7 +47,6 @@ public class RoomService {
                 .template(request.getTemplate())
                 .build();
         room = roomRepository.save(room);
-        uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
         participantRepository.save(new Participant(loginMember.getNickname(), room));
         return uploadFileService.uploadAndSaveUploadFiles(uploadFiles, room);
     }
@@ -51,7 +54,7 @@ public class RoomService {
     @Transactional
     public RoomEnterResponse enterRoom(String entranceCode, Member loginMember) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
+                .orElseThrow(() -> new IllegalArgumentException("방이 존재하지 않습니다." + entranceCode));
         room.incrementParticipantCount();
         roomRepository.save(room);
         participantRepository.save(new Participant(loginMember.getNickname(), room));
@@ -94,12 +97,25 @@ public class RoomService {
     private void broadcastRoomUpdate(RoomUpdateNotification notification) {
         messagingTemplate.convertAndSend("/sub/roomUpdate", notification);
     }
-    public RoomInfoResponse getRoomInfoByEntranceCode(String entranceCode) {
+
+    public RoomInfoResponse getRoomInfoWithFiles(String entranceCode) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with entrance code: " + entranceCode));
 
         List<String> participantNicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
+                .toList();
+
+        List<UploadFile> files = uploadFileRepository.findByRoomId(room.getId());
+
+        List<String> pdfUrls = files.stream()
+                .filter(f -> "application/pdf".equals(f.getFileType()))
+                .map(UploadFile::getFileUrl)
+                .toList();
+
+        List<String> codeUrls = files.stream()
+                .filter(f -> f.getFileType().equals("text/x-python-script") || f.getFileType().equals("application/octet-stream"))
+                .map(UploadFile::getFileUrl)
                 .toList();
 
         return RoomInfoResponse.builder()
@@ -109,11 +125,15 @@ public class RoomService {
                 .personnelCount(room.getPersonnelCount())
                 .entranceCode(room.getEntranceCode())
                 .template(room.getTemplate())
-                .hostNickname(room.getHostNickname()) // 호스트 닉네임 추가
-                .participantNicknames(participantNicknames) // 참여 인원의 닉네임 목록 추가
+                .hostNickname(room.getHostNickname())
+                .participantNicknames(participantNicknames)
+                .codeUrls(new RoomInfoResponse.CodeUrls(room.getLanguage(), codeUrls))
+                .pdfUrls(pdfUrls)
                 .build();
     }
 }
+
+
 
 
 
