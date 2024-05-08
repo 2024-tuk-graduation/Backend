@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,21 +14,21 @@ import lombok.extern.slf4j.Slf4j;
 public class SignalingController {
 
     @MessageMapping("/peer/offer/{roomId}")
-    @SendTo("/pub/peer/offer/{roomId}")
+    @SendTo("/sub/peer/offer/{roomId}")
     public SignalingMessage handleOffer(@Payload SignalingMessage offer, @DestinationVariable("roomId") String roomId) {
         log.info("[OFFER] Room {} : {}", roomId, offer.getContent());
         return offer;
     }
     
     @MessageMapping("/peer/answer/{roomId}")
-    @SendTo("/pub/peer/answer/{roomId}")
+    @SendTo("/sub/peer/answer/{roomId}")
     public SignalingMessage handleAnswer(@Payload SignalingMessage answer, @DestinationVariable("roomId") String roomId) {
         log.info("[ANSWER] Room {} : {}", roomId, answer.getContent());
         return answer;
     }
 
     @MessageMapping("/peer/iceCandidate/{roomId}")
-    @SendTo("/pub/peer/iceCandidate/{roomId}")
+    @SendTo("/sub/peer/iceCandidate/{roomId}")
     public SignalingMessage handleIceCandidate(@Payload SignalingMessage candidate, @DestinationVariable("roomId") String roomId) {
         log.info("[ICE CANDIDATE] Room {} : {}", roomId, candidate.getContent());
         return candidate;

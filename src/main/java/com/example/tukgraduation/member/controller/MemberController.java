@@ -49,13 +49,14 @@ public class MemberController {
         if (!loginService.checkPassword(member.getUsername(), loginRequest.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+        ResultResponse<MemberLoginResponse> resultResponse = new ResultResponse<>(ResultCode.USER_LOGIN_SUCCESS,
+                MemberLoginResponse.builder()
+                        .nickname(member.getNickname())
+                        .id(member.getId())
+                        .build());
 
         loginService.login(member.getId(), request.getSession());
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.USER_LOGIN_SUCCESS,
-                MemberLoginResponse.builder()
-                        .username(member.getUsername())
-                        .id(member.getId())
-                        .build()));
+        return ResponseEntity.status(HttpStatus.OK).body(resultResponse);
     }
 
     @GetMapping("/logout")
