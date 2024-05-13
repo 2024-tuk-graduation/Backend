@@ -41,8 +41,8 @@ public class SignalingController {
         return candidate;
     }
 
-    @MessageMapping("/media/status/{roomId}/{userId}")
-    public void handleMediaStatus(@Payload MediaStatusRequest status, @DestinationVariable("roomId") String roomId, @DestinationVariable("userId") String userId) {
+    @MessageMapping("/media/status/{roomId}/{nickname}")
+    public void handleMediaStatus(@Payload MediaStatusRequest status, @DestinationVariable("roomId") String roomId, @DestinationVariable("nickname") String nickname) {
         messagingTemplate.convertAndSend("/sub/media/status/" + roomId, status);
     }
 
