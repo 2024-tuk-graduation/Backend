@@ -1,5 +1,6 @@
 package com.example.tukgraduation.chatroom.controller;
 
+import com.example.tukgraduation.chatroom.dto.MediaStatusRequest;
 import com.example.tukgraduation.chatroom.dto.SignalingMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -13,6 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class SignalingController {
 
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public SignalingController(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
     @MessageMapping("/peer/offer/{roomId}")
     @SendTo("/sub/peer/offer/{roomId}")
     public SignalingMessage handleOffer(@Payload SignalingMessage offer, @DestinationVariable("roomId") String roomId) {
@@ -33,4 +40,10 @@ public class SignalingController {
         log.info("[ICE CANDIDATE] Room {} : {}", roomId, candidate.getContent());
         return candidate;
     }
+
+    @MessageMapping("/media/status/{roomId}/{userId}")
+    public void handleMediaStatus(@Payload MediaStatusRequest status, @DestinationVariable("roomId") String roomId, @DestinationVariable("userId") String userId) {
+        messagingTemplate.convertAndSend("/sub/media/status/" + roomId, status);
+    }
+
 }
