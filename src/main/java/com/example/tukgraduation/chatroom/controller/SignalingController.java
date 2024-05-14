@@ -34,9 +34,9 @@ public class SignalingController {
         return answer;
     }
 
-    @MessageMapping("/peer/iceCandidate/{roomId}")
-    @SendTo("/sub/peer/iceCandidate/{roomId}")
-    public SignalingMessage handleIceCandidate(@Payload SignalingMessage candidate, @DestinationVariable("roomId") String roomId) {
+    @MessageMapping("/peer/iceCandidate/{roomId}/{nickname}")
+    @SendTo("/sub/peer/iceCandidate/{roomId}/{nickname}")
+    public SignalingMessage handleIceCandidate(@Payload SignalingMessage candidate, @DestinationVariable("roomId") String roomId, @DestinationVariable("nickname") String nickname) {
         log.info("[ICE CANDIDATE] Room {} : {}", roomId, candidate.getContent());
         return candidate;
     }
