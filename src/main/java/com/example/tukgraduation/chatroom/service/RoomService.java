@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -55,7 +54,6 @@ public class RoomService {
     public RoomEnterResponse enterRoom(String entranceCode, Member loginMember) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("방이 존재하지 않습니다." + entranceCode));
-        room.incrementParticipantCount();
         roomRepository.save(room);
         participantRepository.save(new Participant(loginMember.getNickname(), room));
         room.incrementParticipantCount();
@@ -130,6 +128,31 @@ public class RoomService {
                 .codeUrls(new RoomInfoResponse.CodeUrls(room.getLanguage(), codeUrls))
                 .pdfUrls(pdfUrls)
                 .build();
+    }
+
+    @Transactional
+    public void changeHost(String entranceCode, String currentHostNickname, String newHostNickname) {
+        Room room = roomRepository.findByEntranceCode(entranceCode)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + entranceCode));
+
+        if (!room.getHostNickname().equals(currentHostNickname)) {
+            throw new IllegalArgumentException("Only the current host can change the host.");
+        }
+
+        Room updatedRoom = room.toBuilder()
+                .hostNickname(newHostNickname)
+                .build();
+        roomRepository.save(updatedRoom);
+
+        List<String> participantNicknames = participantRepository.findByRoom(updatedRoom).stream()
+                .map(Participant::getNickname)
+                .toList();
+
+        RoomUpdateNotification notification = new RoomUpdateNotification(
+                updatedRoom.getPersonnelCount(),
+                participantNicknames
+        );
+        broadcastRoomUpdate(notification);
     }
 }
 
