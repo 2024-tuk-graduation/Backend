@@ -39,16 +39,16 @@ public class RoomInfoResponse {
     @Setter
     public static class CodeUrls {
         private String language;
-        private List<String> urls; // 코드 파일 URL 리스트
+        private List<FileDetail> urls; // 코드 파일 URL 리스트
 
         // 생성자, getter, setter
-        public CodeUrls(String language, List<String> urls) {
+        public CodeUrls(String language, List<FileDetail> urls) {
             this.language = language;
             this.urls = urls;
         }
     }
 
-    public RoomInfoResponse(Room room, List<FileDetail> pdfUrls, List<String> codeUrls) {
+    public RoomInfoResponse(Room room, List<FileDetail> pdfUrls, List<FileDetail> codeUrls) {
         this.roomName = room.getRoomName();
         this.hostNickname = room.getHostNickname();
         this.personnelCount = room.getPersonnelCount();

@@ -112,9 +112,9 @@ public class RoomService {
                 .map(f -> new RoomInfoResponse.FileDetail(f.getFileUrl(), f.getFileName()))
                 .toList();
 
-        List<String> codeUrls = files.stream()
-                .filter(f -> f.getFileType().equals("text/x-python-script") || f.getFileType().equals("application/octet-stream"))
-                .map(UploadFile::getFileUrl)
+        List<RoomInfoResponse.FileDetail> codeUrls = files.stream()
+                .filter(f -> "text/x-python-script".equals(f.getFileType()) || "application/octet-stream".equals(f.getFileType()))
+                .map(f -> new RoomInfoResponse.FileDetail(f.getFileUrl(), f.getFileName()))
                 .toList();
 
         return RoomInfoResponse.builder()
