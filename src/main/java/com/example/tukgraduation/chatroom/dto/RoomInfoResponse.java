@@ -21,7 +21,19 @@ public class RoomInfoResponse {
     private String hostNickname; // 호스트의 닉네임
     private List<String> participantNicknames; // 참여 인원의 닉네임 목록
     private CodeUrls codeUrls;
-    private List<String> pdfUrls;
+    private List<FileDetail> pdfUrls;
+
+    @Getter
+    @Setter
+    public static class FileDetail {
+        private String fileUrl;
+        private String fileName;
+
+        public FileDetail(String fileUrl, String fileName) {
+            this.fileUrl = fileUrl;
+            this.fileName = fileName;
+        }
+    }
 
     @Getter
     @Setter
@@ -36,7 +48,7 @@ public class RoomInfoResponse {
         }
     }
 
-    public RoomInfoResponse(Room room, List<String> pdfUrls, List<String> codeUrls) {
+    public RoomInfoResponse(Room room, List<FileDetail> pdfUrls, List<String> codeUrls) {
         this.roomName = room.getRoomName();
         this.hostNickname = room.getHostNickname();
         this.personnelCount = room.getPersonnelCount();

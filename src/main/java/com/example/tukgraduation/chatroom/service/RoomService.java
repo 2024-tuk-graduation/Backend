@@ -107,9 +107,9 @@ public class RoomService {
 
         List<UploadFile> files = uploadFileRepository.findByRoomId(room.getId());
 
-        List<String> pdfUrls = files.stream()
+        List<RoomInfoResponse.FileDetail> pdfUrls = files.stream()
                 .filter(f -> "application/pdf".equals(f.getFileType()))
-                .map(UploadFile::getFileUrl)
+                .map(f -> new RoomInfoResponse.FileDetail(f.getFileUrl(), f.getFileName()))
                 .toList();
 
         List<String> codeUrls = files.stream()
