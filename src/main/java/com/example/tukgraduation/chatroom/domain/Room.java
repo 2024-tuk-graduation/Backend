@@ -25,7 +25,16 @@ public class Room extends BaseEntity{
     private int participantCount = 1; // 참가자 수
     private int template;
 
-
+    @Builder(toBuilder = true)
+    public Room(Long id, String hostNickname, String roomName, String language, int personnelCount, String entranceCode, int template) {
+        this.id = id;
+        this.hostNickname = hostNickname;
+        this.roomName = roomName;
+        this.language = language;
+        this.personnelCount = personnelCount;
+        this.entranceCode = entranceCode;
+        this.template = template;
+    }
 
     @ElementCollection
     private List<String> uploadFiles;
