@@ -132,7 +132,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void changeHost(String entranceCode, String currentHostNickname, String newHostNickname) {
+    public HostChangeResponse changeHost(String entranceCode, String currentHostNickname, String newHostNickname) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + entranceCode));
 
@@ -155,6 +155,10 @@ public class RoomService {
                 updatedRoom.getHostNickname()
         );
         broadcastRoomUpdate(notification);
+
+        return HostChangeResponse.builder()
+                .hostNickname(newHostNickname)
+                .build();
     }
 }
 

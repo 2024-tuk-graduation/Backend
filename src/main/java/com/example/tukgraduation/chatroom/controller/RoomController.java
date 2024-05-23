@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -78,8 +77,8 @@ public class RoomController {
 
     @PostMapping("/changeHost")
     public ResponseEntity<ResultResponse<HostChangeResponse>> changeHost(@RequestBody HostChangeRequest request) {
-        roomService.changeHost(request.getEntranceCode(), request.getCurrentHostNickname(), request.getNewHostNickname());
-        ResultResponse<HostChangeResponse> resultResponse = new ResultResponse<>(ResultCode.HOST_CHANGE_SUCCESS, request.getNewHostNickname());
+        HostChangeResponse hostChangeResponse = roomService.changeHost(request.getEntranceCode(), request.getCurrentHostNickname(), request.getNewHostNickname());
+        ResultResponse<HostChangeResponse> resultResponse = new ResultResponse<>(ResultCode.HOST_CHANGE_SUCCESS, hostChangeResponse);
         return ResponseEntity.ok(resultResponse);
     }
 }
