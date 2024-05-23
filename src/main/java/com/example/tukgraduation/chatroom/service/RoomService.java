@@ -134,10 +134,10 @@ public class RoomService {
     @Transactional
     public HostChangeResponse changeHost(String entranceCode, String currentHostNickname, String newHostNickname) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + entranceCode));
+                .orElseThrow(() -> new IllegalArgumentException("방이 존재하지 않습니다."));
 
         if (!room.getHostNickname().equals(currentHostNickname)) {
-            throw new IllegalArgumentException("Only the current host can change the host.");
+            throw new IllegalArgumentException("호스트만 변경이 가능합니다.");
         }
 
         Room updatedRoom = room.toBuilder()
