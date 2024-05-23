@@ -18,8 +18,10 @@ public class RoomCreateResponse {
     private List<String> pdfUrls;
     private String roomName;
     private CodeUrls codeUrls;
+
     public RoomCreateResponse() {
     }
+
     @Getter
     @Setter
     public static class CodeUrls {
