@@ -63,7 +63,7 @@ public class RoomService {
                 .toList();
 
         // 웹소켓을 통해 참가자 수와 닉네임 목록을 실시간으로 방송
-        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getPersonnelCount(),nicknames));
+        messagingTemplate.convertAndSend("/sub/roomUpdate", new RoomUpdateNotification(room.getPersonnelCount(),nicknames, room.getHostNickname()));
         return new RoomEnterResponse(room.getEntranceCode());
     }
 
@@ -86,7 +86,8 @@ public class RoomService {
 
         RoomUpdateNotification notification = new RoomUpdateNotification(
                 room.getPersonnelCount(),
-                remainingNicknames
+                remainingNicknames,
+                room.getHostNickname()
         );
         broadcastRoomUpdate(notification);
         return notification;
@@ -150,7 +151,8 @@ public class RoomService {
 
         RoomUpdateNotification notification = new RoomUpdateNotification(
                 updatedRoom.getPersonnelCount(),
-                participantNicknames
+                participantNicknames,
+                updatedRoom.getHostNickname()
         );
         broadcastRoomUpdate(notification);
     }

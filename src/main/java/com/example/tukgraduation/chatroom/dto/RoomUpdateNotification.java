@@ -10,10 +10,12 @@ import java.util.List;
 public class RoomUpdateNotification {
     private int personnelCount;
     private List<String> participantNicknames;
+    private String hostNickname;
 
-public RoomUpdateNotification(int personnelCount, List<String> participantNicknames) {
+public RoomUpdateNotification(int personnelCount, List<String> participantNicknames, String hostNickname) {
         this.personnelCount = personnelCount;
         this.participantNicknames = participantNicknames;
+        this.hostNickname = hostNickname;
     }
 
 }
