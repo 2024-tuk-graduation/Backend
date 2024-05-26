@@ -24,7 +24,6 @@ public class RoomInfoResponse {
     private List<FileDetail> pdfUrls;
 
     @Getter
-    @Setter
     public static class FileDetail {
         private String fileUrl;
         private String fileName;
@@ -36,19 +35,18 @@ public class RoomInfoResponse {
     }
 
     @Getter
-    @Setter
     public static class CodeUrls {
         private String language;
-        private List<FileDetail> urls; // 코드 파일 URL 리스트
+        private List<String> urls; // 코드 파일 URL 리스트
 
         // 생성자, getter, setter
-        public CodeUrls(String language, List<FileDetail> urls) {
+        public CodeUrls(String language, List<String> urls) {
             this.language = language;
             this.urls = urls;
         }
     }
 
-    public RoomInfoResponse(Room room, List<FileDetail> pdfUrls, List<FileDetail> codeUrls) {
+    public RoomInfoResponse(Room room, List<FileDetail> pdfUrls, List<String> codeUrls) {
         this.roomName = room.getRoomName();
         this.hostNickname = room.getHostNickname();
         this.personnelCount = room.getPersonnelCount();

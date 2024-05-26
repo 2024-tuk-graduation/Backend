@@ -112,9 +112,9 @@ public class RoomService {
                 .map(f -> new RoomInfoResponse.FileDetail(f.getFileUrl(), f.getFileName()))
                 .toList();
 
-        List<RoomInfoResponse.FileDetail> codeUrls = files.stream()
-                .filter(f -> "text/x-python-script".equals(f.getFileType()) || "application/octet-stream".equals(f.getFileType()))
-                .map(f -> new RoomInfoResponse.FileDetail(f.getFileUrl(), f.getFileName()))
+        List<String> codeUrls = files.stream()
+                .filter(f -> f.getFileType().equals("text/x-python-script") || f.getFileType().equals("application/octet-stream"))
+                .map(UploadFile::getFileUrl)
                 .toList();
 
         return RoomInfoResponse.builder()
@@ -134,10 +134,10 @@ public class RoomService {
     @Transactional
     public HostChangeResponse changeHost(String entranceCode, String currentHostNickname, String newHostNickname) {
         Room room = roomRepository.findByEntranceCode(entranceCode)
-                .orElseThrow(() -> new IllegalArgumentException("방이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + entranceCode));
 
         if (!room.getHostNickname().equals(currentHostNickname)) {
-            throw new IllegalArgumentException("호스트만 변경이 가능합니다.");
+            throw new IllegalArgumentException("Only the current host can change the host.");
         }
 
         Room updatedRoom = room.toBuilder()
