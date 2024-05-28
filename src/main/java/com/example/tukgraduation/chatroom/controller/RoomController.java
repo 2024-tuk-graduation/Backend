@@ -13,6 +13,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,9 +27,11 @@ import java.util.List;
 public class RoomController {
 
     private final RoomService roomService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public RoomController(RoomService roomService) {
+    public RoomController(RoomService roomService, SimpMessagingTemplate messagingTemplate) {
         this.roomService = roomService;
+        this.messagingTemplate = messagingTemplate;
     }
     // 방 생성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -80,5 +86,10 @@ public class RoomController {
         HostChangeResponse hostChangeResponse = roomService.changeHost(request.getEntranceCode(), request.getCurrentHostNickname(), request.getNewHostNickname());
         ResultResponse<HostChangeResponse> resultResponse = new ResultResponse<>(ResultCode.HOST_CHANGE_SUCCESS, hostChangeResponse);
         return ResponseEntity.ok(resultResponse);
+    }
+
+    @MessageMapping("/canvasdraw")
+    public void handleCanvasDraw(@Payload DrawData drawData) {
+        messagingTemplate.convertAndSend("/sub/canvasDraw", drawData);
     }
 }
