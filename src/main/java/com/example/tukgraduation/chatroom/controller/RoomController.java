@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,4 +91,30 @@ public class RoomController {
     public void handleCanvasDraw(@Payload DrawData drawData) {
         messagingTemplate.convertAndSend("/sub/canvasDraw", drawData);
     }
+
+    @MessageMapping("/canvasdraw/color")
+    public void handleCanvasDrawColor(@Payload DrawData.ColorChange colorChange) {
+        messagingTemplate.convertAndSend("/sub/canvasdraw/color", colorChange);
+    }
+
+    @MessageMapping("/canvasdraw/thickness")
+    public void handleCanvasDrawThickness(@Payload DrawData.ThicknessChange thicknessChange) {
+        messagingTemplate.convertAndSend("/sub/canvasdraw/thickness", thicknessChange);
+    }
+
+    @MessageMapping("/canvasdraw/type")
+    public void handleCanvasDrawType(@Payload DrawData.DrawTypeChange drawTypeChange) {
+        messagingTemplate.convertAndSend("/sub/canvasdraw/type", drawTypeChange);
+    }
+
+    @MessageMapping("/canvasdraw/clearall")
+    public void handleCanvasDrawClearAll(@Payload DrawData.ClearAll clearAll) {
+        messagingTemplate.convertAndSend("/sub/canvasdraw/clearall", clearAll);
+    }
+
+    @MessageMapping("/canvasdraw/erasepart")
+    public void handleCanvasDrawErasePart(@Payload DrawData.ErasePart erasePart) {
+        messagingTemplate.convertAndSend("/sub/canvasdraw/erasepart", erasePart);
+    }
+
 }
