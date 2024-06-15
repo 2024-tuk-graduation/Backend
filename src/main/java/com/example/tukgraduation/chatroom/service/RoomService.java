@@ -14,8 +14,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -147,20 +145,9 @@ public class RoomService {
                 .build();
         roomRepository.save(updatedRoom);
 
-        List<String> participantNicknames = participantRepository.findByRoom(updatedRoom).stream()
-                .map(Participant::getNickname)
-                .toList();
-
-        RoomUpdateNotification notification = new RoomUpdateNotification(
-                updatedRoom.getPersonnelCount(),
-                participantNicknames,
-                updatedRoom.getHostNickname()
-        );
-        broadcastRoomUpdate(notification);
-
-        return HostChangeResponse.builder()
-                .hostNickname(newHostNickname)
-                .build();
+        HostChangeResponse hostChangeResponse = new HostChangeResponse(newHostNickname);
+        messagingTemplate.convertAndSend("/sub/hostChange", hostChangeResponse);
+        return hostChangeResponse;
     }
 
 
