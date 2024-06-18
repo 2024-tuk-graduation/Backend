@@ -86,10 +86,10 @@ public class RoomController {
         ResultResponse<HostChangeResponse> resultResponse = new ResultResponse<>(ResultCode.HOST_CHANGE_SUCCESS, hostChangeResponse);
         return ResponseEntity.ok(resultResponse);
     }
-
+    
     @MessageMapping("/canvasdraw")
     public void handleCanvasDraw(@Payload DrawData drawData) {
-        messagingTemplate.convertAndSend("/sub/canvasDraw", drawData);
+        messagingTemplate.convertAndSend("/sub/canvasdraw", drawData);
     }
 
     @MessageMapping("/canvasdraw/color")
@@ -117,4 +117,9 @@ public class RoomController {
         messagingTemplate.convertAndSend("/sub/canvasdraw/erasepart", erasePart);
     }
 
+
+    @MessageMapping("/canvasdraw/codeMode")
+    public void handleCanvasDrawCodeMode(@Payload DrawData.CodeMode codeMode) {
+        messagingTemplate.convertAndSend("/sub/canvasdraw/codeMode", codeMode);
+    }
 }
