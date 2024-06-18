@@ -18,6 +18,7 @@ public enum ResultCode {
     ROOM_ENTER_SUCCESS("ROO2", 200, "방 입장 성공"),
     ROOM_INFO_SUCCESS("ROO3", 200, "방 정보 조회 성공"),
     HOST_CHANGE_SUCCESS("R004", 200, "호스트 변경 성공"),
+    QNA_CREATE_SUCCESS("R005", 200, "QNA 생성 성공"),
 
     //Compile
     COMPILE_SUCCESS("C001", 200, "컴파일 성공"),

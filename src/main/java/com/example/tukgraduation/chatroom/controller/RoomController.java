@@ -122,4 +122,10 @@ public class RoomController {
     public void handleCanvasDrawCodeMode(@Payload DrawData.CodeMode codeMode) {
         messagingTemplate.convertAndSend("/sub/canvasdraw/codeMode", codeMode);
     }
+
+    @PostMapping("/qna")
+    public ResponseEntity<ResultResponse<QnaMessage>> sendQna(@RequestBody QnaMessage qnaMessage) {
+        messagingTemplate.convertAndSend("/sub/qna", qnaMessage);
+        return new ResponseEntity<>(new ResultResponse<>(ResultCode.QNA_CREATE_SUCCESS, null), HttpStatus.OK);
+    }
 }
