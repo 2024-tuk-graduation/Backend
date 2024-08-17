@@ -68,28 +68,33 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomUpdateNotification leaveRoom(Long roomId, String nickname) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
+    public RoomUpdateNotification leaveRoom(String roomEntranceCode, String nickname) {
+        // Find the room by its entry code
+        Room room = roomRepository.findByEntranceCode(roomEntranceCode)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with entry code: " + roomEntranceCode));
 
+        // Find the participant by the room and their nickname
         Participant leavingParticipant = participantRepository.findByRoomAndNickname(room, nickname)
                 .orElseThrow(() -> new IllegalArgumentException("Participant not found in room: " + nickname));
 
+        // Remove the participant from the room
         participantRepository.delete(leavingParticipant);
         room.decrementParticipantCount();
         roomRepository.save(room);
 
-        // 남아있는 참가자 목록 업데이트
+        // Update the list of remaining participants
         List<String> remainingNicknames = participantRepository.findByRoom(room).stream()
                 .map(Participant::getNickname)
                 .toList();
 
+        // Create and send the room update notification
         RoomUpdateNotification notification = new RoomUpdateNotification(
                 room.getPersonnelCount(),
                 remainingNicknames,
                 room.getHostNickname()
         );
         broadcastRoomUpdate(notification);
+
         return notification;
     }
 

@@ -62,9 +62,10 @@ public class RoomController {
     }
 
     @PostMapping("/leave")
+    @LoginRequired
     public ResponseEntity<RoomUpdateNotification> leaveRoom(@RequestBody RoomLeaveRequest request) {
         try {
-            RoomUpdateNotification notification = roomService.leaveRoom(request.getRoomId(), request.getNickname());
+            RoomUpdateNotification notification = roomService.leaveRoom(request.getEntranceCode(), request.getNickname());
             // 방 나가기 성공, 업데이트된 참가자 정보 포함하여 반환
             return ResponseEntity.ok(notification);
         } catch (IllegalArgumentException e) {

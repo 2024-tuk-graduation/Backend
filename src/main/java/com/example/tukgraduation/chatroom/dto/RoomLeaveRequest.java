@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomLeaveRequest {
-    private Long roomId;
+    private String entranceCode;
     private String nickname;
 
 }
