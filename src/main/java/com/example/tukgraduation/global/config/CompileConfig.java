@@ -11,8 +11,8 @@ public class CompileConfig {
     @Value("${rapidapi.key}")
     private String key;
 
-    public static final String COMPILE_API_URL = "https://online-code-compiler.p.rapidapi.com/v1/";
-    public static final String COMPILE_API_HOST = "online-code-compiler.p.rapidapi.com";
+    public static final String COMPILE_API_URL = "https://code-compiler10.p.rapidapi.com/";
+    public static final String COMPILE_API_HOST = "code-compiler10.p.rapidapi.com";
 
 }
 

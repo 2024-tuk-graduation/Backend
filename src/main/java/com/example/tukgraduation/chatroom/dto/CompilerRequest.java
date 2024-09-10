@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access =  AccessLevel.PRIVATE)
 @Getter
 public class CompilerRequest {
-    @NotEmpty
-    private String language;
 
     @NotEmpty
-    private String version;
+    private String lang;
 
     @NotEmpty
     private String code;

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import reactor.core.publisher.Mono;
 
 import static com.example.tukgraduation.global.config.CompileConfig.COMPILE_API_URL;
 
@@ -25,22 +26,26 @@ public class CodeService {
                 .uriBuilderFactory(factory)
                 .build();
 
-        CompilerResponse responseMono = webclient.post()
+        return webclient.post()
                 .header("X-RapidAPI-Key", compileConfig.getKey())
-                .header("X-RapidAPI-Host", compileConfig.COMPILE_API_HOST)
+                .header("X-RapidAPI-Host", CompileConfig.COMPILE_API_HOST)
                 .header("content-type", "application/json")
+                .header("x-compile", "rapidapi")
                 .bodyValue(request)// await
                 .exchangeToMono(response -> {
-                    Integer httpStatusCode = response.statusCode().value();
+                    int httpStatusCode = response.statusCode().value();
                     HttpStatus httpStatus = HttpStatus.valueOf(httpStatusCode);
                     if (httpStatus.is2xxSuccessful()) {
-                        return response.bodyToMono(CompilerResponse.class);
+                        return response.bodyToMono(CompilerResponse.class)
+                                .switchIfEmpty(Mono.error(new RuntimeException("Empty response body")));
                     } else {
-                        log.error("Exception occurred - status: {}, message: {}", httpStatus, httpStatus.getReasonPhrase());
-                        throw new RuntimeException();
+                        return response.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                    log.error("Error body: {}", errorBody);
+                                    return Mono.error(new RuntimeException("Failed with status: " + httpStatusCode + ", body: " + errorBody));
+                                });
                     }
                 }).block();
-        return responseMono;
     }
 
 }

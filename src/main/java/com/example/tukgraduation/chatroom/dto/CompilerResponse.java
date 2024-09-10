@@ -10,12 +10,6 @@ import lombok.*;
 public class CompilerResponse {
 
     @NotNull
-    private String cpuTime;
-
-    @NotNull
-    private String memory;
-
-    @NotNull
     private String output;
 }
 
